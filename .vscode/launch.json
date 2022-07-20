@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debuggarna",
+        "type": "cppvsdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/x64/Debug/Numgeon.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true,
+        "preLaunchTask": "Buildarna"
+      }
+    ]
+  }
