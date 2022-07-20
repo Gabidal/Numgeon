@@ -3,7 +3,7 @@
 
 Map::Map(){
 
-    int Entity_Count = 100;
+    int Entity_Count = 1000;
 
     Objects.resize(Entity_Count);
 

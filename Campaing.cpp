@@ -14,7 +14,7 @@ void CAMPAING::Campaing(){
 
     while (Player->Life.HP != STATS::REJECTED){
 
-        cout << "What shall thou doth?";
+        cout << "What shall thou doth?\n";
         Player->Life.Report();
 
         string tmp = "";
@@ -49,20 +49,40 @@ void CAMPAING::Campaing(){
 
 void CAMPAING::Draw_Map(){
 
-    for (int X = Player->Position.X -(RENDER_DISTANCE + 1); X < Player->Position.X + RENDER_DISTANCE; X++){
+    for (int X = -(RENDER_DISTANCE + 1); X <= RENDER_DISTANCE; X++){
+        if (X == -RENDER_DISTANCE){
+            cout << CONSOLE::WHITE << X << CONSOLE::RESET;
+        }
+        else if (X == RENDER_DISTANCE){
 
-        for (int Y = Player->Position.Y -(RENDER_DISTANCE + 1); Y < Player->Position.Y + RENDER_DISTANCE; Y++){
+            cout << " " + CONSOLE::WHITE << X << CONSOLE::RESET;
 
-            if (Y == -(RENDER_DISTANCE + 1)){
-                cout << CONSOLE::BLACK << X << CONSOLE::RESET;
+        }
+        else if (X != -(RENDER_DISTANCE + 1)){
+            cout << "   ";
+        }
+
+        for (int Y = -(RENDER_DISTANCE + 1); Y <= RENDER_DISTANCE; Y++){
+            if (Y == -RENDER_DISTANCE && X == -(RENDER_DISTANCE + 1)){
+                cout << CONSOLE::WHITE << Y << CONSOLE::RESET;
             }
+            else if (Y == RENDER_DISTANCE && X == -(RENDER_DISTANCE + 1)){
+
+                cout << CONSOLE::WHITE << Y << CONSOLE::RESET;
+
+            }
+
             if (X == -(RENDER_DISTANCE + 1)){
-                cout << CONSOLE::BLACK << Y << CONSOLE::RESET;
+                cout << " ";
             }
-            if (X != -(RENDER_DISTANCE + 1) && Y != -(RENDER_DISTANCE + 1)){
-                Object* Current_Object = World->At(X, Y);
+
+
+            if (X != -(RENDER_DISTANCE + 1) && Y !=  -(RENDER_DISTANCE + 1)){
+                Object* Current_Object = World->At(Player->Position.X - X, Player->Position.Y - Y);
                 cout << Object::Get_Color(Current_Object) + Object::Get_Marker(Current_Object) + CONSOLE::RESET;
             }
+
+            cout << " ";
         }
         cout << endl;
     }

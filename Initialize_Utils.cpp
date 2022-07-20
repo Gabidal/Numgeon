@@ -18,21 +18,21 @@ void INITIALIZE_UTILS::INIT(){
         CONSOLE::WHITE = "";
 
     }
-    else if (OS == "linux"){
+    else{
 
-        CONSOLE::RESET = "\e[0m";
-        CONSOLE::BLACK = "\e[30m";
-        CONSOLE::RED = "\e[31m";
-        CONSOLE::GREEN = "\e[32m";
-        CONSOLE::YELLOW = "\e[33m";
-        CONSOLE::BLUE = "\e[34m";
-        CONSOLE::MAGENTA = "\e[35m";
-        CONSOLE::CYAN = "\e[36m";
-        CONSOLE::WHITE = "\e[37m";
+        CONSOLE::RESET = "\033[0m";
+        CONSOLE::BLACK = "\033[30m";
+        CONSOLE::RED = "\033[31m";
+        CONSOLE::GREEN = "\033[32m";
+        CONSOLE::YELLOW = "\033[33m";
+        CONSOLE::BLUE = "\033[34m";
+        CONSOLE::MAGENTA = "\033[35m";
+        CONSOLE::CYAN = "\033[36m";
+        CONSOLE::WHITE = "\033[37m";
 
         CONSOLE::Bold = [](string Text){
 
-            return string("\e[1m") + "\e" + Text;
+            return string("\033[1m") + Text;
 
         };
 

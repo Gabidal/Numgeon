@@ -3,6 +3,7 @@
 #include "Parse_Arguments.h"
 #include "Map.h"
 #include "Campaing.h"
+#include "Initialize_Utils.h"
 
 Object* Player;
 bool Keep_Going = true;
@@ -49,9 +50,12 @@ void Lobby(){
 
 int main(int Argument_Count, char** Arguments){
     PARSE_ARGUMENTS::Parse_OS(Argument_Count, Arguments);
+    INITIALIZE_UTILS::INIT();
     World = new Map();
 
-    *World->At(Player->Position.X, Player->Position.Y) = new Object(true);
+    Player = new Object(true);
+
+    World->Objects.push_back(*Player);
 
     //Set the player to point into the map
     Player = World->At(Player->Position.X, Player->Position.Y);

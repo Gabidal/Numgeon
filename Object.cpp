@@ -86,8 +86,9 @@ Object::Object(bool Extern) : Object(){
         cin >> tmp;
 
         Social.Birth_Place = *PARSE_ARGUMENTS::Parse_String_To_Position(tmp);
+        Position = Social.Birth_Place;
 
-        cout << "I until are from the" << Social.Birth_Place.X << ", " << Social.Birth_Place.Y << endl;
+        cout << "I until are from the '" << Social.Birth_Place.X << ", " << Social.Birth_Place.Y << "'" << endl;
     }
 
 }
@@ -140,7 +141,7 @@ char Object::Get_Marker(Object* o){
             return '@';
         }
         else if (o->Behaviour == Behaviour::TROLLER){
-            return '¤';
+            return '^';
         }
     }
     return '#';
