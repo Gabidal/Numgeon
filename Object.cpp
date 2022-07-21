@@ -1,6 +1,7 @@
 #include "Object.h"
 #include "Console.h"
 #include "Parse_Arguments.h"
+#include "Globals.h"
 
 #include <iostream>
 
@@ -70,25 +71,26 @@ Object::Object(bool Extern) : Object(){
         cout << "Who thou to rule mine destiny? ";
         cin >> Social.Name;
 
-        cout << "What are thy hobbies? ";
+        cout << "\nWhat are thy hobbies? ";
         cin >> tmp;
 
-        cout << "I see, thou are a homeles man trying to get thy life back together." << endl;
+        cout << "\nI see, thou are a homeles man trying to get thy life back together." << endl;
 
-        cout << "Doth thou  hast friends? ";
+        cout << "\nDoth thou  hast friends? ";
         cin >> tmp;
 
-        cout << "I see, that thou are maidenles" << endl;
+        cout << "\nI see, that thou are maidenles" << endl;
 
         tmp = "";
 
-        cout << "One moe question, whence hath thou born? ";
+        cout << "\nOne moe question, whence hath thou born? ";
         cin >> tmp;
 
         Social.Birth_Place = *PARSE_ARGUMENTS::Parse_String_To_Position(tmp);
         Position = Social.Birth_Place;
 
-        cout << "I until are from the '" << Social.Birth_Place.X << ", " << Social.Birth_Place.Y << "'" << endl;
+        cout << "\nI until are from the '" << Social.Birth_Place.X << ", " << Social.Birth_Place.Y << "'\n";
+        cout << LINE << endl;
     }
 
 }
@@ -125,25 +127,22 @@ string Object::Get_Color(Object* o){
 
 char Object::Get_Marker(Object* o){
     if (o){
-        if (o->Behaviour == Behaviour::PASSIVE){
-            return '#';
-        }
-        else if (o->Behaviour == Behaviour::AGGRESSIVE){
-            return '!';
-        }
-        else if (o->Behaviour == Behaviour::DEFENSIVE){
-            return '#';
-        }
-        else if (o->Behaviour == Behaviour::FAITHFULL){
-            return '+';
-        }
-        else if (o->Behaviour == Behaviour::EVIL){
+        if (o->Type == Object_Type::ENTITY){
             return '@';
         }
-        else if (o->Behaviour == Behaviour::TROLLER){
-            return '^';
+        else if (o->Type == Object_Type::WALL){
+            return '#';
+        }
+        else if (o->Type == Object_Type::AIR){
+            return ' ';
+        }
+        else if (o->Type == Object_Type::WATER){
+            return '~';
+        }
+        else if (o->Type == Object_Type::ITEM){
+            return '?';
         }
     }
-    return '#';
+    return ' ';
 }
 

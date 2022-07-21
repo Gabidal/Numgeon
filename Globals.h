@@ -6,5 +6,6 @@
 inline std::string OS = "linux";
 inline int MAP_WIDTH = 1000;
 inline int RENDER_DISTANCE = 10;
+inline std::string LINE = "--------------------------------------------------\n";
 
 #endif

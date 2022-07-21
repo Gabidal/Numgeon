@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Campaing.h"
 #include "Initialize_Utils.h"
+#include "Globals.h"
 
 Object* Player;
 bool Keep_Going = true;
@@ -25,7 +26,15 @@ void Lobby(){
 
         cin >> Answer;
 
-        int tmp = stoi(Answer);
+        int tmp;
+        
+        try{
+            tmp = stoi(Answer);
+        }
+        catch(...){
+            cout << "Invalid deed" << endl;
+            continue;
+        }
 
         if (tmp == 1){
             CAMPAING::Campaing();
@@ -43,9 +52,9 @@ void Lobby(){
             Keep_Going = false;
         }
 
+        cout << LINE << endl;
+
     }
-
-
 }
 
 int main(int Argument_Count, char** Arguments){

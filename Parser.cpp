@@ -50,3 +50,19 @@ Position* PARSE_ARGUMENTS::Parse_String_To_Position(string text){
 
     return new Position{X, Y};
 }
+
+vector<string> PARSE_ARGUMENTS::Cut(string raw){
+    vector<string> Result;
+    string tmp = "";
+    for (auto c : raw){
+        if (c == ' '){
+            Result.push_back(tmp);
+            tmp = "";
+        }
+        else{
+            tmp += c;
+        }
+    }
+    Result.push_back(tmp);
+    return Result;
+}
