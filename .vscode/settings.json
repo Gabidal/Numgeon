@@ -22,6 +22,7 @@
         "xlocale": "cpp",
         "xiosbase": "cpp",
         "ios": "cpp",
-        "istream": "cpp"
+        "istream": "cpp",
+        "span": "cpp"
     }
 }

@@ -5,6 +5,7 @@
 #include "Globals.h"
 #include "Console.h"
 #include "Parse_Arguments.h"
+#include "Teller.h"
 
 
 extern Map* World;
@@ -46,7 +47,7 @@ void CAMPAING::Campaing(){
             Move(Player);
         }
         else if (Action == 3){
-            Act(Player);
+            Act(World->At(Player->Position.X, Player->Position.Y));
         }
         else if (Action == 4){
             return;
@@ -93,8 +94,10 @@ void CAMPAING::Draw_Map(){
 
 
             if (X != -(RENDER_DISTANCE + 1) && Y !=  -(RENDER_DISTANCE + 1)){
-                Object* Current_Object = World->At(Player->Position.X - X, Player->Position.Y - Y);
-                cout << Object::Get_Color(Current_Object) + Object::Get_Marker(Current_Object) + CONSOLE::RESET;
+
+                vector<Object*> Current_Objects = World->At(Player->Position.X - X, Player->Position.Y - Y);
+
+                cout << Object::Get_Color(Current_Objects) + Object::Get_Marker(Current_Objects) + CONSOLE::RESET;
             }
 
             cout << " ";
@@ -129,22 +132,22 @@ void CAMPAING::Move(Object* o){
             int Amount = stoi(Commands[1]);
 
             if (Commands[0] == "up"){
-                Detect_Collision_X(o, o->Position.X - Amount);
+                Detect_Collision_X(o, o->Position.X + Amount);
 
                 Commands.erase(Commands.end() - 2, Commands.end());
             }
             else if (Commands[0] == "down"){
-                Detect_Collision_X(o, o->Position.X + Amount);
+                Detect_Collision_X(o, o->Position.X - Amount);
                 
                 Commands.erase(Commands.end() - 2, Commands.end());
             }
             else if (Commands[0] == "left"){
-                Detect_Collision_X(o, o->Position.Y - Amount);
+                Detect_Collision_Y(o, o->Position.Y - Amount);
 
                 Commands.erase(Commands.end() - 2, Commands.end());
             }
             else if (Commands[0] == "right"){
-                Detect_Collision_X(o, o->Position.Y - Amount);
+                Detect_Collision_Y(o, o->Position.Y - Amount);
                 
                 Commands.erase(Commands.end() - 2, Commands.end());
             }
@@ -160,9 +163,24 @@ void CAMPAING::Move(Object* o){
 
 }
 
-void CAMPAING::Act(Object* o){
+void CAMPAING::Act(vector<Object*> Entities){
 
+    //First pronounce that an act has just started.
+    cout << LINE << endl;
 
+    //First get the name of the most aggresive entitie
+    Object* Starter = nullptr;
+
+    for (auto& i : Entities){
+        if (!Starter)
+            Starter == i;
+        //The more aggresive behaviours are at higher value.
+        else if (i->Behaviour > Starter->Behaviour)
+            Starter = i;
+    }
+
+    //Now we can report who started this act.
+    Declare(Starter);
 
 }
 
@@ -174,10 +192,10 @@ void CAMPAING::Detect_Collision_X(Object* o, int X){
     int Direction = Sign(X - o->Position.X);
 
     for (int Current_X = o->Position.X; Current_X != X; Current_X += Direction){
+        vector<Object*> tiles = World->At(Current_X, o->Position.Y);
 
-        Object* tmp = World->At(Current_X, o->Position.Y);
-
-        if (tmp && tmp->Type == Object_Type::WALL){
+        //need to check only the first tile, since cant go ontop of another wall.
+        if (tiles.size() > 0 && tiles[0]->Type == Object_Type::WALL){
             return;
         }
 
@@ -189,10 +207,10 @@ void CAMPAING::Detect_Collision_Y(Object* o, int Y){
     int Direction = Sign(Y - o->Position.Y);
 
     for (int Current_Y = o->Position.Y; Current_Y != Y; Current_Y += Direction){
+        vector<Object*> tiles = World->At(o->Position.X, Current_Y);
 
-        Object* tmp = World->At(o->Position.X, Current_Y);
-
-        if (tmp && tmp->Type == Object_Type::WALL){
+        //need to check only the first tile, since cant go ontop of another wall.
+        if (tiles.size() > 0 && tiles[0]->Type == Object_Type::WALL){
             return;
         }
 
@@ -203,9 +221,13 @@ void CAMPAING::Detect_Collision_Y(Object* o, int Y){
 void CAMPAING::Update_World(){
     for (int X = -RENDER_DISTANCE * 2; X <= RENDER_DISTANCE * 2; X++){
         for (int Y = -RENDER_DISTANCE * 2; Y <= RENDER_DISTANCE * 2; Y++){
-            Object* tmp = World->At(X, Y);
-            if (tmp){
 
+            vector<Object*> Results = World->At(X, Y);
+
+            if (X == Player->Position.X && Y == Player->Position.Y){
+                Act(Results);
+            }
+            else for (auto& tmp : Results){
                 if (tmp->Behaviour == Behaviour::AGGRESSIVE){
 
                     //First get the distance to the player.
@@ -216,7 +238,6 @@ void CAMPAING::Update_World(){
                     Detect_Collision_Y(tmp, tmp->Position.Y + Distance_Y);
 
                 }
-
             }
         }
     }

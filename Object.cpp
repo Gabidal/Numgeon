@@ -2,8 +2,10 @@
 #include "Console.h"
 #include "Parse_Arguments.h"
 #include "Globals.h"
+#include "Teller.h"
 
 #include <iostream>
+#include <map>
 
 using namespace std;
 
@@ -60,6 +62,8 @@ Object::Object(){
     Type = Random<Object_Type>();
     Behaviour = Random<enum class Behaviour>();
     Life = Life_System();
+
+    Social.Name = NAMES[Random(NAMES)];
 
 }
 
@@ -125,6 +129,38 @@ string Object::Get_Color(Object* o){
     return CONSOLE::WHITE;
 }
 
+string Object::Get_Color(vector<Object*> o){
+    //        color, count
+    map<int, int> Average;
+
+    for (auto& i : o){
+
+        if (Average.find((int)i->Behaviour) != Average.end()){
+            Average[(int)i->Behaviour]++;
+        }
+        else{
+            Average[(int)i->Behaviour] = 1;
+        }
+
+    }
+
+    //now return the color that has the most count
+    int Max = 0;
+    ::Behaviour Color;
+
+    for (auto& i : Average){
+        if (i.second > Max){
+            Max = i.second;
+            Color = (::Behaviour)i.first;
+        }
+    }
+
+    Object tmp;
+    tmp.Behaviour = Color;
+
+    return Get_Color(&tmp);
+}
+
 char Object::Get_Marker(Object* o){
     if (o){
         if (o->Type == Object_Type::ENTITY){
@@ -145,4 +181,13 @@ char Object::Get_Marker(Object* o){
     }
     return ' ';
 }
+
+char Object::Get_Marker(vector<Object*> o){
+    if (o.size() == 1){
+        return Get_Marker(o[0]);
+    }
+
+    return (char)*to_string(o.size()).begin();
+}
+
 

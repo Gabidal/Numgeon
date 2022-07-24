@@ -9,7 +9,7 @@ public:
 
     Map();
 
-    Object* At(int X, int Y);
+    vector<Object*> At(int X, int Y);
 };
 
 #endif

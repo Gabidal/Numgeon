@@ -13,11 +13,15 @@ Map::Map(){
     }
 }
 
-Object* Map::At(int X, int Y){
-    for (auto& i : Objects){
-        if (i.Position.X == X && i.Position.Y == Y){
-            return &i;
+vector<Object*> Map::At(int X, int Y){
+
+    vector<Object*> Return_Objects;
+
+    for(int i = 0; i < Objects.size(); i++){
+        if(Objects[i].Position.X == X && Objects[i].Position.Y == Y){
+            Return_Objects.push_back(&Objects[i]);
         }
     }
-    return nullptr;
+
+    return Return_Objects;
 }

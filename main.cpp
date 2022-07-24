@@ -67,7 +67,7 @@ int main(int Argument_Count, char** Arguments){
     World->Objects.push_back(*Player);
 
     //Set the player to point into the map
-    Player = World->At(Player->Position.X, Player->Position.Y);
+    Player = &World->Objects[World->Objects.size() - 1];
 
     Lobby();
 

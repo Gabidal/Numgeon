@@ -16,11 +16,11 @@ enum class Object_Type{
 };
 
 enum class Behaviour{
-    PASSIVE,
-    AGGRESSIVE,
     DEFENSIVE,
+    PASSIVE,
     FAITHFULL,
     EVIL,
+    AGGRESSIVE,
     TROLLER,
     COUNT,
 };
@@ -39,6 +39,10 @@ enum class STATS{
 template<typename T>
 T Random(){
     return (T)(rand() % (int)T::COUNT);
+}
+
+int Random(vector<string> names){
+    return (int)(rand() % (int)names.size());
 }
 
 class Life_System{
@@ -89,7 +93,11 @@ public:
 
     static string Get_Color(Object* o);
 
+    static string Get_Color(vector<Object*> o);
+
     static char Get_Marker(Object* o);
+
+    static char Get_Marker(vector<Object*> o);
 };
 
 #endif
