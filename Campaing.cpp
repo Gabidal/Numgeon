@@ -7,6 +7,9 @@
 #include "Parse_Arguments.h"
 #include "Teller.h"
 
+#include <thread>
+#include <chrono>
+
 
 extern Map* World;
 extern Object* Player;
@@ -238,11 +241,8 @@ void CAMPAING::Battle(vector<vector<Object*>> Sides){
 
                 cout << LINE << endl;
                 cout << "Team '" << Sides[Team_A][0]->Social.Name << "' against team '" << Sides[Team_B][0]->Social.Name << "'" << endl;
-                #if _WIN32
-                    _sleep(TURN_SLEEP_TIME);
-                #else 
-                    sleep(TURN_SLEEP_TIME);
-                #endif
+                
+                this_thread::sleep_for(chrono::milliseconds(TURN_SLEEP_TIME));
 
                 Compete(Sides[Team_A], Sides[Team_B]);
 
@@ -287,11 +287,8 @@ void CAMPAING::Compete(vector<Object*>& A, vector<Object*>& B){
     for (int i = 0; i < A.size(); i++){
         cout << LINE << endl;
         cout << "It's " << A[i]->Social.Name << " turn." << endl;
-        #if _WIN32
-            _sleep(TURN_SLEEP_TIME);
-        #else
-            sleep(TURN_SLEEP_TIME);
-        #endif
+    
+        this_thread::sleep_for(chrono::milliseconds(TURN_SLEEP_TIME));
 
         A[i]->Turn(B, A);
     }
@@ -300,12 +297,9 @@ void CAMPAING::Compete(vector<Object*>& A, vector<Object*>& B){
 void CAMPAING::Start_Friending(vector<Object*> Entities){
 
     for (auto& A : Entities){
-        #if _WIN32
-            _sleep(TURN_SLEEP_TIME);
-        #else
-            sleep(TURN_SLEEP_TIME);
-        #endif
         
+        this_thread::sleep_for(chrono::milliseconds(TURN_SLEEP_TIME));
+
         for (auto& B : Entities){
             if (A == B && A->Behaviour != Behaviour::MAD)
                 continue;    //skip self friending. Unless mad.
