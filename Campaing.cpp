@@ -29,7 +29,6 @@ void CAMPAING::Campaing(){
         cin >> tmp;
         cout << endl;
 
-        
         int Action;
         
         try{
@@ -56,11 +55,16 @@ void CAMPAING::Campaing(){
             cout << "Invalid deed" << endl;
         }
 
-        //Update AI
-        Update_World();
+        if (Action != 1){
+            //Update AI
+            Update_World();
+        }
 
     }
 
+    cout << CONSOLE::RED << CONSOLE::Bold("YOU HAVE LOST!") << CONSOLE::RESET << endl;
+
+    Player->Life.HP = STATS::SATISFYING;
 }
 
 void CAMPAING::Draw_Map(){
@@ -224,8 +228,8 @@ void CAMPAING::Battle(vector<vector<Object*>> Sides){
         Continue = false;
 
 
-        for (auto& Team_A : Sides){
-            for (auto& Team_B : Sides){
+        for (int Team_A = 0; Team_A < Sides.size(); Team_A++){
+            for (int Team_B = 0; Team_B < Sides.size(); Team_B++){
                 if (Team_A == Team_B)
                     continue;
 
@@ -233,30 +237,56 @@ void CAMPAING::Battle(vector<vector<Object*>> Sides){
                 Continue = true;
 
                 cout << LINE << endl;
-                cout << "Team '" << Team_A[0]->Social.Name << "' against team '" << Team_B[0]->Social.Name << "'" << endl;
+                cout << "Team '" << Sides[Team_A][0]->Social.Name << "' against team '" << Sides[Team_B][0]->Social.Name << "'" << endl;
                 _sleep(TURN_SLEEP_TIME);
 
-                Compete(Team_A, Team_B);
+                Compete(Sides[Team_A], Sides[Team_B]);
+
+                for (int a = 0; a < Sides[Team_A].size(); a++){
+                    if (Sides[Team_A][a]->Life.HP == STATS::REJECTED){
+                        Sides[Team_A].erase(Sides[Team_A].begin() + a--);
+                    }
+                }
+
+                if (Sides[Team_A].size() == 0){
+                    Sides.erase(Sides.begin() + Team_A);
+
+                    if (Team_A <= Team_B){
+                        Team_B = max(--Team_B, 0);
+                    }
+                    
+                    Team_A = max(--Team_A, 0);
+                }
+
+                for (int b = 0; b < Sides[Team_B].size(); b++){
+                    if (Sides[Team_B][b]->Life.HP == STATS::REJECTED){
+                        Sides[Team_B].erase(Sides[Team_B].begin() + b--);
+                    }
+                }
+
+                if (Sides[Team_B].size() == 0){
+                    Sides.erase(Sides.begin() + Team_B);
+
+                    if (Team_B <= Team_A){
+                        Team_A = max(--Team_A, 0);
+                    }
+
+                    Team_B = max(--Team_B, 0);
+                }
+
             }
         }
     }
 }
 
 void CAMPAING::Compete(vector<Object*>& A, vector<Object*>& B){
-
     for (int i = 0; i < A.size(); i++){
         cout << LINE << endl;
         cout << "It's " << A[i]->Social.Name << " turn." << endl;
         _sleep(TURN_SLEEP_TIME);
         
         A[i]->Turn(B, A);
-
-        if (A[i]->Life.HP == STATS::REJECTED){
-            A.erase(A.begin() + i);
-            i--;
-        }
     }
-
 }
 
 void CAMPAING::Start_Friending(vector<Object*> Entities){

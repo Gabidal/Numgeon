@@ -107,9 +107,13 @@ public:
 
     void Charm(Object* o);
 
-    void Turn(vector<Object*> Enemies, vector<Object*> Team);
+    void Turn(vector<Object*>& Enemies, vector<Object*>& Team);
 
     void Act(vector<Object*> Enemies, vector<Object*> Team);
+
+    void Sleep();
+
+    void Run(vector<Object*>& Enemies, vector<Object*>& Team);
 
     bool Physical_Attack(Object* o);
     bool Spell_Attack(Object* o);

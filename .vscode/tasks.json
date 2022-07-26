@@ -6,8 +6,8 @@
             "command": "msbuild.exe",
             "args": [
                 "Numgeon.sln",
-                "/p:Configuration=Debug",
-                //"/t:Rebuild"
+                "/p:Configuration=Release",
+                "/t:Rebuild"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

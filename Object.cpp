@@ -14,6 +14,8 @@ extern Object* Player;
 string Life_System::Get_Stats(STATS sta){
 
     switch (sta){
+        case STATS::COUNT:
+            return "Legendary";
         case STATS::HANDFUL:
             return "Handful";
         case STATS::GREAT:
@@ -40,10 +42,10 @@ void Life_System::Report(){
 
     Result += CONSOLE::RED    + "HP: "  +       CONSOLE::Bold(Get_Stats(HP))      + CONSOLE::RESET + "\n"; 
     Result += CONSOLE::BLUE   + "DEF: " +       CONSOLE::Bold(Get_Stats(DEFENCE)) + CONSOLE::RESET + "\n"; 
-    Result += CONSOLE::YELLOW + "STE: " +       CONSOLE::Bold(Get_Stats(STRENGTH))  + CONSOLE::RESET + "\n";
-    Result += CONSOLE::YELLOW + "MAN: " +       CONSOLE::Bold(Get_Stats(MANA))  + CONSOLE::RESET + "\n";
+    Result += CONSOLE::RED + "STE: " +       CONSOLE::Bold(Get_Stats(STRENGTH))  + CONSOLE::RESET + "\n";
+    Result += CONSOLE::MAGENTA + "MAN: " +       CONSOLE::Bold(Get_Stats(MANA))  + CONSOLE::RESET + "\n";
     Result += CONSOLE::CYAN   + "SPE: " +       CONSOLE::Bold(Get_Stats(SPEED))   + CONSOLE::RESET + "\n"; 
-    Result += CONSOLE::WHITE  + "STA: " +       CONSOLE::Bold(Get_Stats(STAMINA)) + CONSOLE::RESET + "\n"; 
+    Result += CONSOLE::RED  + "STA: " +       CONSOLE::Bold(Get_Stats(STAMINA)) + CONSOLE::RESET + "\n"; 
     Result += CONSOLE::MAGENTA+ "IQ: "  +       CONSOLE::Bold(Get_Stats(IQ))      + CONSOLE::RESET + "\n"; 
 
     cout << Result << endl; 
@@ -224,7 +226,8 @@ void Object::Charm(Object* o){
 
     if (Friend_Status.second == 0){
 
-        cout <<  Social.Name << Good_Bye[Random(Good_Bye)] << o->Social.Name << endl;
+        if (this == Player || o == Player)
+            cout <<  Social.Name << Good_Bye[Random(Good_Bye)] << o->Social.Name << endl;
 
         for (int i = 0; i < Social.Friends.size(); i++){
             if (Social.Friends[i].first == 0){
@@ -235,11 +238,12 @@ void Object::Charm(Object* o){
     }
 
     if (Friend_Status.first != nullptr){
-        cout << Social.Name << Friend_Mistakes[Random(Friend_Mistakes)] << o->Social.Name << endl;
+
+        if (this == Player || o == Player)
+            cout << Social.Name << Friend_Mistakes[Random(Friend_Mistakes)] << o->Social.Name << endl;
 
         return;
     }
-
 
     if (Behaviour == Behaviour::MAD){
         Slow_Talk(Social.Name + "Said" + Nonsentical[Random(Nonsentical)] + "to " + o->Social.Name + ".");
@@ -250,20 +254,22 @@ void Object::Charm(Object* o){
 
     if (Distance >= MAP_WIDTH / 2){
 
-        cout << Social.Name << " Tried to befriend " << o->Social.Name << " but to no vail" << endl;
+        if (this == Player || o == Player)
+            cout << Social.Name << " Tried to befriend " << o->Social.Name << " but to no vail" << endl;
 
         return;
     }
     else{
 
-        cout << Social.Name << " Befriended " << o->Social.Name << endl;
+        if (this == Player || o == Player)
+            cout << Social.Name << " Befriended " << o->Social.Name << endl;
 
         Social.Friends.push_back({o, 1});
     }
 
 }
 
-void Object::Turn(vector<Object*> Enemies, vector<Object*> Team){
+void Object::Turn(vector<Object*>& Enemies, vector<Object*>& Team){
 
     if (this == Player){
         cout << "What are thou going to try?" << endl;
@@ -282,7 +288,7 @@ void Object::Turn(vector<Object*> Enemies, vector<Object*> Team){
 
         if (Act_Index == 5){
             if (stoi(Answer) == 1){
-                //Skip
+                Sleep();
             }
             else if (stoi(Answer) == 2){
                 Act(Enemies, Team);
@@ -291,7 +297,7 @@ void Object::Turn(vector<Object*> Enemies, vector<Object*> Team){
                 //Open Inventory
             }
             else if (stoi(Answer) == 4){
-                //Run
+                Run(Enemies, Team);
             }
         }
         else if (Act_Index == 4){
@@ -302,7 +308,7 @@ void Object::Turn(vector<Object*> Enemies, vector<Object*> Team){
                 //Open Inventory
             }
             else if (stoi(Answer) == 3){
-                //Run
+                Run(Enemies, Team);
             }
         }
 
@@ -311,7 +317,7 @@ void Object::Turn(vector<Object*> Enemies, vector<Object*> Team){
         int Choice = rand() % 4;
 
         if (Choice == 0){
-            //Skip
+            Sleep();
         }
         else if (Choice == 1){
             Act(Enemies, Team);
@@ -320,7 +326,7 @@ void Object::Turn(vector<Object*> Enemies, vector<Object*> Team){
             //Open Inventory
         }
         else if (Choice == 3){
-            //Run
+            Run(Enemies, Team);
         }
     }
 }
@@ -336,14 +342,16 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
 
         int Index = 0;
         for (auto& E : Enemies){
-            cout << Index++ << Get_Color(E) << ": " << E->Social.Name << CONSOLE::RESET << endl;
+            cout << Index++ << Get_Color(E) << ": " << E->Social.Name << CONSOLE::RESET;
+            cout << " Condition: " << E->Life.Get_Stats(E->Life.HP) << endl;
         }
 
         cout << endl;
         cout << "Teamates: \n";
 
         for (auto& T : Team){
-            cout << Index++ << Get_Color(T) << ": " << T->Social.Name << CONSOLE::RESET << endl;
+            cout << Index++ << Get_Color(T) << ": " << T->Social.Name << CONSOLE::RESET;
+            cout << " Condition: " << T->Life.Get_Stats(T->Life.HP) << endl;
         }
 
         cout << LINE << endl;
@@ -419,9 +427,77 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
 
 }
 
-bool Object::Physical_Attack(Object* o){
-    o->Life.HP = (STATS)((int)o->Life.HP - ((int)Life.STRENGTH / ((int)STATS::COUNT / 2) / ((int)o->Life.DEFENCE + 1)));
+void Object::Sleep(){
+    
+    cout << Social.Name << " wanted to take a nap " << endl;
 
+    Life.MANA = (STATS)((int)Life.MANA + 1);
+    Life.STAMINA = (STATS)((int)Life.STAMINA + 1);
+}
+
+void Object::Run(vector<Object*>& Enemies, vector<Object*>& Team){
+    int Enemy_Team_Average_Speed = 0;
+
+    for (auto& i : Enemies){
+        Enemy_Team_Average_Speed += (int)i->Life.SPEED;
+    }
+
+    Enemy_Team_Average_Speed /= Enemies.size();
+
+    int Team_Average_Speed = 0;
+
+    for (auto& i : Team){
+        Team_Average_Speed += (int)i->Life.SPEED;
+    }
+
+    Team_Average_Speed /= Team.size();
+    
+    cout << "Team '" << Team[0]->Social.Name << "' tried to outrun team '" << Enemies[0]->Social.Name << "' ";
+
+    if (Enemy_Team_Average_Speed >= Team_Average_Speed){
+        cout << "but to no vail." << endl;
+    }
+    else{
+        cout << "and succeeded." << endl;
+
+        Team.clear();
+
+        return;
+    }
+
+    if ((int)this->Life.SPEED > Enemy_Team_Average_Speed){
+
+        int Choise = 0;
+        if (this == Player){
+            cout << "You can leave your slowpoke team behind and run for it." << endl;
+            cout << "1: Yes\n";
+            cout << "2: No\n";
+
+            string Answer = "";
+
+            cin >> Answer;
+
+            Choise = stoi(Answer);
+        }   
+        else{
+            Choise = rand() % 3;
+        }
+
+        if (Choise == 1){
+            cout << "'" << this->Social.Name << "' ran like a dog with it's tail between it's legs, and left his team." << endl;
+
+            for (int i = 0; i < Team.size(); i++){
+                if (Team[i] == this){
+                    Team.erase(Team.begin() + i);
+                }
+            }
+        }
+    }
+}
+
+bool Object::Physical_Attack(Object* o){
+    int HP = ((int)o->Life.HP - ((int)Life.STRENGTH / max((int)o->Life.DEFENCE, 1)));
+    o->Life.HP = (STATS)max(min(HP, (int)STATS::COUNT), 0);
     return true;
 }
 
@@ -430,20 +506,24 @@ bool Object::Spell_Attack(Object* o){
 
     int Mana = (int)Life.MANA;
 
-    if (Mana - (int)Life.STRENGTH <= 0 && Mana != 0){
+    if ((Mana + (int)Life.IQ) - (int)Life.STRENGTH <= 0 && Mana != 0){
         if (Over_Use_Magic() == false){
             return false;
         }
     }
+    else if (Mana == 0){
+        cout << "'" << Social.Name << "' tried to use magic to no vail." << endl;
+        return false;
+    }
     else{
-        Mana -= (int)Life.STRENGTH;
+        Mana -= max((int)Life.STRENGTH - (int)Life.IQ, 0);
     }
 
-    HP -= ((int)Life.STRENGTH / ((int)STATS::COUNT / 2) / ((int)o->Life.DEFENCE + 1));
+    HP -= ((int)Life.IQ / max((int)o->Life.DEFENCE, 1));
 
-    o->Life.HP = (STATS)HP;
+    o->Life.HP = (STATS)max(min(HP, (int)STATS::COUNT), 0);
 
-    Life.MANA = (STATS)Mana;
+    Life.MANA = (STATS)max(min(Mana, (int)STATS::COUNT), 0);
 
     return true;
 }
@@ -453,20 +533,24 @@ bool Object::Spell_Heal(Object* o){
 
     int Mana = (int)Life.MANA;
 
-    if (Mana - (int)Life.STRENGTH <= 0 && Mana != 0){
+    if ((Mana + (int)Life.IQ) - (int)Life.STRENGTH <= 0 && Mana != 0){
         if (Over_Use_Magic() == false){
             return false;
         }
     }
+    else if (Mana == 0){
+        cout << "'" << Social.Name << "' tried to use magic to no vail." << endl;
+        return false;
+    }
     else{
-        Mana -= (int)Life.STRENGTH;
+        Mana -= max((int)Life.STRENGTH - (int)Life.IQ, 0);
     }
 
-    HP += ((int)Life.STRENGTH / ((int)STATS::COUNT / 2));
+    HP += ((int)Life.IQ / max((int)o->Life.DEFENCE, 1));
 
-    o->Life.HP = (STATS)HP;
+    o->Life.HP = (STATS)max(min(HP, (int)STATS::COUNT), 0);
 
-    Life.MANA = (STATS)Mana;
+    Life.MANA = (STATS)max(min(Mana, (int)STATS::COUNT), 0);
 
     return true;
 }
