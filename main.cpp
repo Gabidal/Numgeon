@@ -5,6 +5,7 @@
 #include "Campaing.h"
 #include "Initialize_Utils.h"
 #include "Globals.h"
+#include "Teller.h"
 
 Object* Player;
 bool Keep_Going = true;

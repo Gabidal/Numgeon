@@ -23,6 +23,8 @@
         "xiosbase": "cpp",
         "ios": "cpp",
         "istream": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "cmath": "cpp",
+        "string": "cpp"
     }
 }

@@ -173,14 +173,106 @@ void CAMPAING::Act(vector<Object*> Entities){
 
     for (auto& i : Entities){
         if (!Starter)
-            Starter == i;
+            Starter = i;
         //The more aggresive behaviours are at higher value.
         else if (i->Behaviour > Starter->Behaviour)
             Starter = i;
     }
 
     //Now we can report who started this act.
-    Declare(Starter);
+    cout << Declare(Starter) << endl;
+    cout << LINE << endl;
+
+    Start_Friending(Entities);
+
+    vector<vector<Object*>> Sides;
+
+    //group the Sides by the friends list
+    for (auto& i : Entities){
+        vector<Object*> Side;
+
+        for (auto& tmp_1 : Sides){
+            for (auto& tmp_2 : tmp_1){
+                if (i == tmp_2){
+                    goto CONTINUE;
+                }
+            }
+        }
+
+        Side = {i};
+
+        for (auto& j : i->Social.Friends){
+            Side.push_back(j.first);
+        }
+
+        Sides.push_back(Side);
+
+        CONTINUE:;
+    }
+
+    //Now that the sides are defined, we can start the battle.
+    Battle(Sides);
+
+}
+
+void CAMPAING::Battle(vector<vector<Object*>> Sides){
+
+    bool Continue = true;
+
+    while (Continue){
+        //await orders to continue if there are stll participants left.
+        Continue = false;
+
+
+        for (auto& Team_A : Sides){
+            for (auto& Team_B : Sides){
+                if (Team_A == Team_B)
+                    continue;
+
+                //If there are still figthers, then continue the battle.
+                Continue = true;
+
+                cout << LINE << endl;
+                cout << "Team '" << Team_A[0]->Social.Name << "' against team '" << Team_B[0]->Social.Name << "'" << endl;
+                _sleep(TURN_SLEEP_TIME);
+
+                Compete(Team_A, Team_B);
+            }
+        }
+    }
+}
+
+void CAMPAING::Compete(vector<Object*>& A, vector<Object*>& B){
+
+    for (int i = 0; i < A.size(); i++){
+        cout << LINE << endl;
+        cout << "It's " << A[i]->Social.Name << " turn." << endl;
+        _sleep(TURN_SLEEP_TIME);
+        
+        A[i]->Turn(B, A);
+
+        if (A[i]->Life.HP == STATS::REJECTED){
+            A.erase(A.begin() + i);
+            i--;
+        }
+    }
+
+}
+
+void CAMPAING::Start_Friending(vector<Object*> Entities){
+
+    for (auto& A : Entities){
+
+        _sleep(TURN_SLEEP_TIME);
+
+        for (auto& B : Entities){
+            if (A == B && A->Behaviour != Behaviour::MAD)
+                continue;    //skip self friending. Unless mad.
+
+            A->Charm(B);
+
+        }
+    }
 
 }
 
@@ -191,7 +283,7 @@ int Sign(int X){
 void CAMPAING::Detect_Collision_X(Object* o, int X){
     int Direction = Sign(X - o->Position.X);
 
-    for (int Current_X = o->Position.X; Current_X != X; Current_X += Direction){
+    for (int Current_X = o->Position.X; Current_X != X;){
         vector<Object*> tiles = World->At(Current_X, o->Position.Y);
 
         //need to check only the first tile, since cant go ontop of another wall.
@@ -199,6 +291,7 @@ void CAMPAING::Detect_Collision_X(Object* o, int X){
             return;
         }
 
+        Current_X += Direction;
         o->Position.X = Current_X;
     }
 }
@@ -206,7 +299,7 @@ void CAMPAING::Detect_Collision_X(Object* o, int X){
 void CAMPAING::Detect_Collision_Y(Object* o, int Y){
     int Direction = Sign(Y - o->Position.Y);
 
-    for (int Current_Y = o->Position.Y; Current_Y != Y; Current_Y += Direction){
+    for (int Current_Y = o->Position.Y; Current_Y != Y;){
         vector<Object*> tiles = World->At(o->Position.X, Current_Y);
 
         //need to check only the first tile, since cant go ontop of another wall.
@@ -214,6 +307,7 @@ void CAMPAING::Detect_Collision_Y(Object* o, int Y){
             return;
         }
 
+        Current_Y += Direction;
         o->Position.Y = Current_Y;
     }
 }
@@ -222,17 +316,20 @@ void CAMPAING::Update_World(){
     for (int X = -RENDER_DISTANCE * 2; X <= RENDER_DISTANCE * 2; X++){
         for (int Y = -RENDER_DISTANCE * 2; Y <= RENDER_DISTANCE * 2; Y++){
 
-            vector<Object*> Results = World->At(X, Y);
+            int Absolute_X = Player->Position.X + X;
+            int Absolute_Y = Player->Position.Y + Y;
 
-            if (X == Player->Position.X && Y == Player->Position.Y){
+            vector<Object*> Results = World->At(Absolute_X, Absolute_Y);
+
+            if (Absolute_X == Player->Position.X && Absolute_Y == Player->Position.Y && Results.size() > 1){
                 Act(Results);
             }
             else for (auto& tmp : Results){
                 if (tmp->Behaviour == Behaviour::AGGRESSIVE){
 
                     //First get the distance to the player.
-                    int Distance_X = tmp->Position.X - Player->Position.X;
-                    int Distance_Y = tmp->Position.Y - Player->Position.Y;
+                    int Distance_X = Player->Position.X - tmp->Position.X;
+                    int Distance_Y = Player->Position.Y - tmp->Position.Y;
 
                     Detect_Collision_X(tmp, tmp->Position.X + Distance_X);
                     Detect_Collision_Y(tmp, tmp->Position.Y + Distance_Y);

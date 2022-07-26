@@ -18,6 +18,11 @@ namespace CAMPAING{
     void Detect_Collision_Y(Object* o, int Y);
     void Update_World();
 
+    void Start_Friending(vector<Object*> Entities);
+
+    void Battle(vector<vector<Object*>> Sides);
+    void Compete(vector<Object*>& A, vector<Object*>& B);
+
 }
 
 #endif

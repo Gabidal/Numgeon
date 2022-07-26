@@ -27,6 +27,15 @@
     <ClCompile Include="Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Campaing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Initialize_Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Teller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h">
@@ -46,6 +55,15 @@
     </ClInclude>
     <ClInclude Include="Parse_Arguments.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </ClInclude>    
+    <ClCompile Include="Campaing.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Initialize_Utils.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Teller.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

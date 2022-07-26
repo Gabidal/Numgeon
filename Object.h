@@ -13,6 +13,7 @@ enum class Object_Type{
     WATER,
     ITEM,
     COUNT,
+    PLAYER,
 };
 
 enum class Behaviour{
@@ -22,17 +23,18 @@ enum class Behaviour{
     EVIL,
     AGGRESSIVE,
     TROLLER,
+    MAD,
     COUNT,
 };
 
 enum class STATS{
-    HANDFUL,
-    GREAT, //Default
-    GUD_SOUP,
-    SATISFYING,
-    MEDIOCRE,
-    TOLERABLE,
     REJECTED,
+    TOLERABLE,
+    MEDIOCRE,
+    SATISFYING,
+    GUD_SOUP,
+    GREAT, //Default
+    HANDFUL,
     COUNT,
 };
 
@@ -41,7 +43,7 @@ T Random(){
     return (T)(rand() % (int)T::COUNT);
 }
 
-int Random(vector<string> names){
+inline int Random(vector<string> names){
     return (int)(rand() % (int)names.size());
 }
 
@@ -49,7 +51,8 @@ class Life_System{
 public:
     STATS HP;
     STATS DEFENCE;
-    STATS ATTACK;
+    STATS STRENGTH;
+    STATS MANA;
     STATS SPEED;
     STATS STAMINA;
     STATS IQ;
@@ -72,18 +75,21 @@ class Social{
 public:
     string Name = "";
     string Hobby = "";
-    vector<class Object*> Friends;
+    //                 friend, reputation
+    vector<pair<class Object*, int>> Friends;
 
     Position Birth_Place;
+
+    pair<class Object*, int> Find(Object* o);
 };
 
 class Object{
 public:
+    Position Position;
     Object_Type Type;
     Behaviour Behaviour;
     Life_System Life;
     Social Social;
-    Position Position;
 
     Object();
 
@@ -98,6 +104,18 @@ public:
     static char Get_Marker(Object* o);
 
     static char Get_Marker(vector<Object*> o);
+
+    void Charm(Object* o);
+
+    void Turn(vector<Object*> Enemies, vector<Object*> Team);
+
+    void Act(vector<Object*> Enemies, vector<Object*> Team);
+
+    bool Physical_Attack(Object* o);
+    bool Spell_Attack(Object* o);
+    bool Spell_Heal(Object* o);
+
+    bool Over_Use_Magic();
 };
 
 #endif

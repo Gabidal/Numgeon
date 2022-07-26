@@ -119,6 +119,7 @@
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Initialize_Utils.cpp" />
     <ClCompile Include="Campaing.cpp" />
+    <ClCompile Include="Teller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Parse_Arguments.h" />
     <ClInclude Include="Campaing.h" />
+    <ClInclude Include="Teller.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
