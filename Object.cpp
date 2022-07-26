@@ -76,7 +76,7 @@ pair<Object*, int> Social::Find(Object* o){
 Object::Object(){
 
     Type = Random<Object_Type>();
-    Behaviour = Random<enum class Behaviour>();
+    Behaviour = Random<::Behaviour>();
     Life = Life_System();
 
     Social.Name = NAMES[Random(NAMES)];

@@ -238,7 +238,11 @@ void CAMPAING::Battle(vector<vector<Object*>> Sides){
 
                 cout << LINE << endl;
                 cout << "Team '" << Sides[Team_A][0]->Social.Name << "' against team '" << Sides[Team_B][0]->Social.Name << "'" << endl;
-                _sleep(TURN_SLEEP_TIME);
+                #if _WIN32
+                    _sleep(TURN_SLEEP_TIME);
+                #else 
+                    sleep(TURN_SLEEP_TIME);
+                #endif
 
                 Compete(Sides[Team_A], Sides[Team_B]);
 
@@ -283,8 +287,12 @@ void CAMPAING::Compete(vector<Object*>& A, vector<Object*>& B){
     for (int i = 0; i < A.size(); i++){
         cout << LINE << endl;
         cout << "It's " << A[i]->Social.Name << " turn." << endl;
-        _sleep(TURN_SLEEP_TIME);
-        
+        #if _WIN32
+            _sleep(TURN_SLEEP_TIME);
+        #else
+            sleep(TURN_SLEEP_TIME);
+        #endif
+
         A[i]->Turn(B, A);
     }
 }
@@ -292,9 +300,12 @@ void CAMPAING::Compete(vector<Object*>& A, vector<Object*>& B){
 void CAMPAING::Start_Friending(vector<Object*> Entities){
 
     for (auto& A : Entities){
-
-        _sleep(TURN_SLEEP_TIME);
-
+        #if _WIN32
+            _sleep(TURN_SLEEP_TIME);
+        #else
+            sleep(TURN_SLEEP_TIME);
+        #endif
+        
         for (auto& B : Entities){
             if (A == B && A->Behaviour != Behaviour::MAD)
                 continue;    //skip self friending. Unless mad.
