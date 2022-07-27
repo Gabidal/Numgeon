@@ -23,5 +23,19 @@ void Slow_Talk(string text, int speed){
     }
 }
 
+string Generate_Name(Object* o){
+    int Name_Length = rand() % (Name_Parts.size() / 2);
 
+    string Result = "";
+
+    for(int i = 0; i < Name_Length; i++){
+        if (rand() % 5 == 0 && Result.size() > 0){
+            Result += " ";
+        }
+
+        Result += Name_Parts[Random(Name_Parts)];
+    }
+
+    return Result;
+}
 

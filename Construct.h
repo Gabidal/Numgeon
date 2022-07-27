@@ -22,19 +22,19 @@ public:
 
     void Generate(int X, int Y);
 
-    static Object Parse_Char(char Char);
+    static Object* Parse_Char(char Char);
 };
 
 inline vector<Construct*> CONSTRUCTS = {
     new Construct{
         string(
-            "##########\n"
-            "#        #\n"
-            "#        #\n"
-            "#        #\n"
-            "####  ####\n"
+            "##########"
+            "#        #"
+            "#        #"
+            "#        #"
+            "####  ####"
         ),
-        11,
+        10,
         5,
     },
 

@@ -7,6 +7,8 @@ class Map{
 public:
     vector<Object*> Objects;
 
+    vector<string> Family_Tree;
+
     Map();
 
     vector<Object*> At(int X, int Y);

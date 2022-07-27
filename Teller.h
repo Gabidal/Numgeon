@@ -11,14 +11,31 @@ class Object;
 inline string GABE = "Gabe"; 
 inline string S1MPLE = "S1mple";
 
-inline vector<string> NAMES = {
-    "Crab",
-    "Troll",
-    "Skeleton",
-    S1MPLE,
-    "Uncle",
-    GABE,
-    "Cow"
+inline vector<string> Name_Parts = {
+    "lahti",
+    "nen",
+    "haara",
+    "joki",
+    "juu",
+    "hamu",
+    "kytki",
+    "qui",
+    "na",
+    "mu",
+    "ni",
+    "nu",
+    "nu",
+    "ko",
+    "ky",
+    "so",
+    "sy",
+    "sa",
+    "tu",
+    "to",
+    "ta",
+    "ko",
+    "ku",
+    "ka"
 };
 
 inline vector<string> Centence_Start = {
@@ -60,6 +77,6 @@ inline vector<string> Failed = {
 
 string Declare(Object* o);
 void Slow_Talk(string text, int speed = 100);
-
+string Generate_Name(Object* o);
 
 #endif

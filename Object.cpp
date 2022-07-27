@@ -79,7 +79,7 @@ Object::Object(){
     Behaviour = Random<::Behaviour>();
     Life = Life_System();
 
-    Social.Name = NAMES[Random(NAMES)];
+    Social.Name = Generate_Name(this);
 
     Social.Birth_Place.X = rand() % MAP_WIDTH;
     Social.Birth_Place.Y = rand() % MAP_WIDTH;

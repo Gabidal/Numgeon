@@ -9,13 +9,10 @@ void Construct::Generate(int X, int Y){
 
     for (int x = 0; x < Height; x++){
         for (int y = 0; y < Width; y++){
-            Object* Tile = new Object(Parse_Char(Data[x * Width + y]));
+            Object* Tile = Parse_Char(Data[x * Width + y]);
 
-            if (Tile->Type == Object_Type::AIR)
+            if (Tile == nullptr)
                 continue;
-
-            if (Tile->Type == Object_Type::COUNT)
-                break;
 
             Tile->Position.X = X + x;
             Tile->Position.Y = Y + y;
@@ -27,17 +24,12 @@ void Construct::Generate(int X, int Y){
 }
 
 
-Object Construct::Parse_Char(char Char){
+Object* Construct::Parse_Char(char Char){
 
     if (Char == '#'){
-        Object tmp = Object(Object_Type::WALL);
-        tmp.Behaviour = Behaviour::COUNT;
+        Object* tmp = new Object(Object_Type::WALL);
+        tmp->Behaviour = Behaviour::COUNT;
         return tmp;
     }
-    else if (Char == ' '){
-        return Object(Object_Type::AIR);
-    }
-    else 
-        return Object(Object_Type::COUNT);
-
+    return nullptr;
 }

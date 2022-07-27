@@ -4,7 +4,6 @@
 Map::Map(){
 
     int Entity_Count = 1000;
-
     Objects.resize(Entity_Count);
 
     for(int i = 0; i < Entity_Count; i++){

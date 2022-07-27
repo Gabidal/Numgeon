@@ -76,6 +76,7 @@ class Social{
 public:
     string Name = "";
     string Hobby = "";
+    string Family_Name = "";
     //                 friend, reputation
     vector<pair<class Object*, int>> Friends;
 
