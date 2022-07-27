@@ -12,6 +12,7 @@ Map::Map(){
         Objects[i]->Position.X = rand() % MAP_WIDTH;
         Objects[i]->Position.Y = rand() % MAP_WIDTH;
     }
+
 }
 
 vector<Object*> Map::At(int X, int Y){

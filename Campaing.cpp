@@ -57,6 +57,9 @@ void CAMPAING::Campaing(){
                 if (actors[i]->Type != Object_Type::DEAD){
                     Alive++;
                 }
+                else{
+                    actors.erase(actors.begin() + i--);
+                }
             }
 
             if (Alive <= 1){
@@ -224,7 +227,16 @@ void CAMPAING::Act(vector<Object*> Entities){
         Side = {i};
 
         for (auto& j : i->Social.Friends){
+            //check if his friend is already on another team
+            for (auto& tmp_1 : Sides){
+                for (auto& tmp_2 : tmp_1){
+                    if (i == tmp_2){
+                        goto SKIP;
+                    }
+                }
+            }
             Side.push_back(j.first);
+            SKIP:;
         }
 
         Sides.push_back(Side);
@@ -346,7 +358,7 @@ void CAMPAING::Detect_Collision_X(Object* o, int X){
     int Direction = Sign(X - o->Position.X);
 
     for (int Current_X = o->Position.X; Current_X != X;){
-        vector<Object*> tiles = World->At(Current_X, o->Position.Y);
+        vector<Object*> tiles = World->At(Current_X + Direction, o->Position.Y);
 
         //need to check only the first tile, since cant go ontop of another wall.
         if (tiles.size() > 0 && tiles[0]->Type == Object_Type::WALL){
@@ -362,7 +374,7 @@ void CAMPAING::Detect_Collision_Y(Object* o, int Y){
     int Direction = Sign(Y - o->Position.Y);
 
     for (int Current_Y = o->Position.Y; Current_Y != Y;){
-        vector<Object*> tiles = World->At(o->Position.X, Current_Y);
+        vector<Object*> tiles = World->At(o->Position.X, Current_Y + Direction);
 
         //need to check only the first tile, since cant go ontop of another wall.
         if (tiles.size() > 0 && tiles[0]->Type == Object_Type::WALL){
@@ -399,7 +411,7 @@ void CAMPAING::Update_World(){
                     tmp->Behaviour == Behaviour::MAD ||
                     tmp->Behaviour == Behaviour::TROLLER ||
                     tmp->Behaviour == Behaviour::EVIL
-                    ) && tmp->Type != Object_Type::DEAD){
+                    ) && tmp->Type != Object_Type::DEAD && tmp->Type == Object_Type::ENTITY){
 
                     //First get the distance to the player.
                     int Distance_X = Player->Position.X - tmp->Position.X;

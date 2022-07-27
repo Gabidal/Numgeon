@@ -120,6 +120,7 @@
     <ClCompile Include="Initialize_Utils.cpp" />
     <ClCompile Include="Campaing.cpp" />
     <ClCompile Include="Teller.cpp" />
+    <ClCompile Include="Construct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h" />
@@ -130,6 +131,7 @@
     <ClInclude Include="Parse_Arguments.h" />
     <ClInclude Include="Campaing.h" />
     <ClInclude Include="Teller.h" />
+    <ClCompile Include="Construct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -98,6 +98,8 @@ public:
 
     Object(int x, int y);
 
+    Object(Object_Type t);
+
     static string Get_Color(Object* o);
 
     static string Get_Color(vector<Object*> o);
@@ -110,7 +112,12 @@ public:
 
     void Turn(vector<Object*>& Enemies, vector<Object*>& Team);
 
+    int AI_Turn(vector<Object*>& Enemies, vector<Object*>& Team);
+
     void Act(vector<Object*> Enemies, vector<Object*> Team);
+
+    //Target, Action
+    pair<int, int> AI_Act(vector<Object*> Enemies, vector<Object*> Team);
 
     void Sleep();
 

@@ -7,7 +7,7 @@
             "args": [
                 "Numgeon.sln",
                 "/p:Configuration=Debug",
-                "/t:Rebuild"
+                //"/t:Rebuild"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

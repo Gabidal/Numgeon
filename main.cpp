@@ -6,6 +6,7 @@
 #include "Initialize_Utils.h"
 #include "Globals.h"
 #include "Teller.h"
+#include "Construct.h"
 
 Object* Player;
 bool Keep_Going = true;
@@ -64,6 +65,14 @@ int main(int Argument_Count, char** Arguments){
     PARSE_ARGUMENTS::Parse_OS(Argument_Count, Arguments);
     INITIALIZE_UTILS::INIT();
     World = new Map();
+
+    for (int i = 0; i < 1000; i++){
+        int X = rand() % MAP_WIDTH;
+        int Y = rand() % MAP_WIDTH;
+
+        Construct* C = CONSTRUCTS[rand() % CONSTRUCTS.size()];
+        C->Generate(X, Y);
+    }
 
     Player = new Object(true);
 

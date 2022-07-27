@@ -320,7 +320,7 @@ void Object::Turn(vector<Object*>& Enemies, vector<Object*>& Team){
 
     }
     else{
-        int Choice = rand() % 4;
+        int Choice = AI_Turn(Enemies, Team);
 
         if (Choice == 0){
             Sleep();
@@ -335,6 +335,53 @@ void Object::Turn(vector<Object*>& Enemies, vector<Object*>& Team){
             Run(Enemies, Team);
         }
     }
+}
+
+
+int Object::AI_Turn(vector<Object*>& Enemies, vector<Object*>& Team){
+
+    int Result = 0;
+    //Result = 0: skip turn and increase stamina & mana by 1
+    //Result = 1: act (potentially attacking the enemy or healing teammate)
+    //Result = 2: inverntory (potentially use an item from the inventory)
+    //Result = 3: run (potentially run away from the enemy)
+
+    if (Life.STAMINA < (STATS)((int)Life.STRENGTH - (int)Life.IQ) || Life.MANA < (STATS)((int)Life.STRENGTH - (int)Life.IQ)){
+        Result = 0;
+        return Result;
+    }
+
+    int Average_Team_HP = 0;
+    int Average_Team_Speed = 0;
+
+    for (auto& i : Team){
+        Average_Team_HP += (int)i->Life.HP;
+        Average_Team_Speed += (int)i->Life.SPEED;
+    }
+
+    Average_Team_HP /= Team.size();
+    Average_Team_Speed /= Team.size();
+
+    int Average_Enemy_HP = 0;
+    int Average_Enemy_Speed = 0;
+
+    for (auto& i : Enemies){
+        Average_Enemy_HP += (int)i->Life.HP;
+        Average_Enemy_Speed += (int)i->Life.SPEED;
+    }
+
+    Average_Enemy_HP /= Enemies.size();
+    Average_Enemy_Speed /= Enemies.size();
+
+    //If team is in disadvantage, run
+    if (Average_Team_HP < Average_Enemy_HP && Average_Team_Speed >= Average_Enemy_Speed){
+        Result = 3;
+        return Result;
+    }
+
+    Result = 1; //default to act
+    return Result;
+
 }
 
 void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
@@ -377,27 +424,27 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
 
         Life.Report();
 
-        cout << CONSOLE::RED << "1: Physical Attack\n" << CONSOLE::RESET;
-        cout << CONSOLE::MAGENTA << "2: Spell Attack\n" << CONSOLE::RESET;
-        cout << CONSOLE::GREEN << "3: Spell Heal\n" << CONSOLE::RESET;
+        cout << CONSOLE::RED << "0: Physical Attack\n" << CONSOLE::RESET;
+        cout << CONSOLE::MAGENTA << "1: Spell Attack\n" << CONSOLE::RESET;
+        cout << CONSOLE::GREEN << "2: Spell Heal\n" << CONSOLE::RESET;
 
         
         cin >> Answer;
         Choise = stoi(Answer);
 
-        if (Choise == 1){
+        if (Choise == 0){
             if (Physical_Attack(Target) == false)
                 goto TRY_AGAIN_PLAYER;
 
             cout << CONSOLE::RED << Social.Name << " Used violence and harmed " << Target->Social.Name << " because of it." << CONSOLE::RESET << endl; 
         }
-        else if (Choise == 2){
+        else if (Choise == 1){
             if (Spell_Attack(Target) == false)
                 goto TRY_AGAIN_PLAYER;
                 
             cout << CONSOLE::RED << Social.Name << " Used magic to harm " << Target->Social.Name << CONSOLE::RESET << endl; 
         }
-        else if (Choise == 3){
+        else if (Choise == 2){
             if (Spell_Heal(Target) == false)
                 goto TRY_AGAIN_PLAYER;
                 
@@ -407,23 +454,30 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
     else{
         TRY_AGAIN_BOT:;
 
-        Choise = rand() % 4;
+        pair<int, int> Result = AI_Act(Enemies, Team);
 
-        Target = Enemies[rand() % Enemies.size()];
+        Choise = Result.second;
 
-        if (Choise == 1){
+        if (Result.first < Enemies.size()){
+            Target = Enemies[Result.first];
+        }
+        else{
+            Target = Team[Result.first - (Enemies.size() - 1)];
+        }
+
+        if (Choise == 0){
             if (Physical_Attack(Target) == false)
                 goto TRY_AGAIN_BOT;
 
             cout << Social.Name << " Used violence and harmed " << Target->Social.Name << " because of it." << endl; 
         }
-        else if (Choise == 2){
+        else if (Choise == 1){
             if (Spell_Attack(Target) == false)
                 goto TRY_AGAIN_BOT;
                 
             cout << Social.Name << " Used magic to harm " << Target->Social.Name << endl; 
         }
-        else if (Choise == 3){
+        else if (Choise == 2){
             if (Spell_Heal(Target) == false)
                 goto TRY_AGAIN_BOT;
                 
@@ -431,6 +485,61 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
         }
     }
 
+}
+
+pair<int, int> Object::AI_Act(vector<Object*> Enemies, vector<Object*> Team){
+
+    pair<int, int> Result;  //pair<Target, Choise>
+
+    //Choise = 0: Physical attack on the target
+    //Choise = 1: Spell attack on the target
+    //Choise = 2: Spell heal on the target
+
+    if (Life.HP < STATS::SATISFYING && Life.MANA >= (STATS)((int)Life.STRENGTH - (int)Life.IQ)){
+        //Find self from the target index.
+        int Index = Enemies.size() - 1;
+
+        for (auto& T : Team){
+            if (T == this){
+                Result.first = Index;
+                break;
+            }
+            Index++;
+        }
+
+        return {Index, 2};
+    }
+
+    pair<Object*, int> Weakest_Enemy;
+
+    Weakest_Enemy.first = Enemies[0];
+    Weakest_Enemy.second = 0;
+
+    for (int i = 0; i < Enemies.size(); i++){
+        if (Enemies[i]->Life.HP < Weakest_Enemy.first->Life.HP){
+            Weakest_Enemy.first = Enemies[i];
+            Weakest_Enemy.second = i;
+        }
+    }
+
+    vector<pair<int, int>> Choises;
+
+    if (Life.MANA >= (STATS)((int)Life.STRENGTH - (int)Life.IQ)){
+        Choises.push_back({Weakest_Enemy.second, 1});
+    }
+
+    if (Life.STAMINA >= (STATS)((int)Life.STRENGTH - (int)Life.IQ)){
+        Choises.push_back({Weakest_Enemy.second, 0});
+    }
+
+    if (Life.MANA > Life.STAMINA && Life.IQ > Life.STRENGTH){
+        return Choises[0];
+    }
+    else{
+        return Choises[Choises.size() - 1];
+    }
+
+    return {0, 5};
 }
 
 void Object::Sleep(){
@@ -502,8 +611,24 @@ void Object::Run(vector<Object*>& Enemies, vector<Object*>& Team){
 }
 
 bool Object::Physical_Attack(Object* o){
+    int Stamina = (int)Life.STAMINA;
+
+    if (Stamina == (int)STATS::REJECTED){
+        cout << Social.Name << " tried to attack but couldn't because of lack of stamina." << endl;
+        return false;
+    }
+    else if (Stamina - ((int)Life.STRENGTH - (int)Life.IQ) >= (int)STATS::REJECTED){
+        Stamina = (int)Life.STAMINA - ((int)Life.STRENGTH - (int)Life.IQ);
+    }
+    else{
+        //Over use physical
+    }
+
     int HP = ((int)o->Life.HP - ((int)Life.STRENGTH / max((int)o->Life.DEFENCE, 1)));
     o->Life.HP = (STATS)max(min(HP, (int)STATS::COUNT), 0);
+
+    Life.STAMINA = (STATS)Stamina;
+
     return true;
 }
 
@@ -621,5 +746,9 @@ bool Object::Say_Mad_Word(){
         return false;
     }
 
+}
+
+Object::Object(Object_Type t) : Object(){
+    Type = t;
 }
 
