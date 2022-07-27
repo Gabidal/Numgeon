@@ -14,6 +14,7 @@ enum class Object_Type{
     ITEM,
     COUNT,
     PLAYER,
+    DEAD,
 };
 
 enum class Behaviour{
@@ -120,6 +121,8 @@ public:
     bool Spell_Heal(Object* o);
 
     bool Over_Use_Magic();
+
+    bool Say_Mad_Word();
 };
 
 #endif

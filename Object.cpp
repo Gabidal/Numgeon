@@ -140,10 +140,13 @@ string Object::Get_Color(Object* o){
             return CONSOLE::MAGENTA;
         }
         else if (o->Behaviour == Behaviour::EVIL){
-            return CONSOLE::BLACK;
+            return CONSOLE::WHITE;
         }
         else if (o->Behaviour == Behaviour::TROLLER){
             return CONSOLE::CYAN;
+        }
+        else if (o->Behaviour == Behaviour::MAD){
+            return CONSOLE::YELLOW;
         }
     }
 
@@ -205,6 +208,9 @@ char Object::Get_Marker(Object* o){
         else if (o->Type == Object_Type::ITEM){
             return '?';
         }
+        else if (o->Type == Object_Type::DEAD){
+            return '+';
+        }
     }
     return ' ';
 }
@@ -245,8 +251,8 @@ void Object::Charm(Object* o){
         return;
     }
 
-    if (Behaviour == Behaviour::MAD){
-        Slow_Talk(Social.Name + "Said" + Nonsentical[Random(Nonsentical)] + "to " + o->Social.Name + ".");
+    if (Behaviour == Behaviour::MAD && Say_Mad_Word()){
+        Slow_Talk(Social.Name + " said" + Nonsentical[Random(Nonsentical)] + " to " + o->Social.Name + ".\n", 16);
     }
 
     //Calculate the birth place position difference between the two entities
@@ -255,14 +261,14 @@ void Object::Charm(Object* o){
     if (Distance >= MAP_WIDTH / 2){
 
         if (this == Player || o == Player)
-            cout << Social.Name << " Tried to befriend " << o->Social.Name << " but to no vail" << endl;
+            cout << CONSOLE::YELLOW + Social.Name + " Tried to befriend " + o->Social.Name + " but to no vail" + CONSOLE::RESET << endl;
 
         return;
     }
     else{
 
         if (this == Player || o == Player)
-            cout << Social.Name << " Befriended " << o->Social.Name << endl;
+            cout << CONSOLE::GREEN + Social.Name + " Befriended " + o->Social.Name + CONSOLE::RESET << endl;
 
         Social.Friends.push_back({o, 1});
     }
@@ -343,7 +349,7 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
         int Index = 0;
         for (auto& E : Enemies){
             cout << Index++ << Get_Color(E) << ": " << E->Social.Name << CONSOLE::RESET;
-            cout << " Condition: " << E->Life.Get_Stats(E->Life.HP) << endl;
+            cout << " Condition: " + CONSOLE::RED + E->Life.Get_Stats(E->Life.HP) + CONSOLE::RESET << endl;
         }
 
         cout << endl;
@@ -351,7 +357,7 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
 
         for (auto& T : Team){
             cout << Index++ << Get_Color(T) << ": " << T->Social.Name << CONSOLE::RESET;
-            cout << " Condition: " << T->Life.Get_Stats(T->Life.HP) << endl;
+            cout << " Condition: " + CONSOLE::RED + T->Life.Get_Stats(T->Life.HP) + CONSOLE::RESET << endl;
         }
 
         cout << LINE << endl;
@@ -383,19 +389,19 @@ void Object::Act(vector<Object*> Enemies, vector<Object*> Team){
             if (Physical_Attack(Target) == false)
                 goto TRY_AGAIN_PLAYER;
 
-            cout << Social.Name << " Used violence and harmed " << Target->Social.Name << " because of it." << endl; 
+            cout << CONSOLE::RED << Social.Name << " Used violence and harmed " << Target->Social.Name << " because of it." << CONSOLE::RESET << endl; 
         }
         else if (Choise == 2){
             if (Spell_Attack(Target) == false)
                 goto TRY_AGAIN_PLAYER;
                 
-            cout << Social.Name << " Used magic to harm " << Target->Social.Name << endl; 
+            cout << CONSOLE::RED << Social.Name << " Used magic to harm " << Target->Social.Name << CONSOLE::RESET << endl; 
         }
         else if (Choise == 3){
             if (Spell_Heal(Target) == false)
                 goto TRY_AGAIN_PLAYER;
                 
-            cout << Social.Name << " Used magic to heal  " << Target->Social.Name << endl; 
+            cout << CONSOLE::GREEN << Social.Name << " Used magic to heal  " << Target->Social.Name << CONSOLE::RESET << endl; 
         }
     }
     else{
@@ -601,3 +607,19 @@ bool Object::Over_Use_Magic(){
     //experience new thing.
     Life.IQ = (STATS)((int)Life.IQ + 1);
 }
+
+bool Object::Say_Mad_Word(){
+
+    int Probability_Of_Success = (int)Life.IQ;
+
+    int Success = rand() % 100;
+
+    if (Probability_Of_Success >= Success){
+        return true;
+    }
+    else{
+        return false;
+    }
+
+}
+

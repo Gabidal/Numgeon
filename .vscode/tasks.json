@@ -6,7 +6,7 @@
             "command": "msbuild.exe",
             "args": [
                 "Numgeon.sln",
-                "/p:Configuration=Release",
+                "/p:Configuration=Debug",
                 "/t:Rebuild"
             ],
             "options": {

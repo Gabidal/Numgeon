@@ -49,7 +49,22 @@ void CAMPAING::Campaing(){
             Move(Player);
         }
         else if (Action == 3){
-            Act(World->At(Player->Position.X, Player->Position.Y));
+            vector<Object*> actors = World->At(Player->Position.X, Player->Position.Y);
+
+            int Alive = 0;
+
+            for (int i = 0; i < actors.size(); i++){
+                if (actors[i]->Type != Object_Type::DEAD){
+                    Alive++;
+                }
+            }
+
+            if (Alive <= 1){
+                cout << "There is nothing to act upon" << endl;
+                continue;
+            }
+
+            Act(actors);
         }
         else if (Action == 4){
             return;
@@ -220,6 +235,16 @@ void CAMPAING::Act(vector<Object*> Entities){
     //Now that the sides are defined, we can start the battle.
     Battle(Sides);
 
+    //Present the victorious side.
+    cout << LINE << endl;
+    if (Sides.size() > 0){
+        cout << CONSOLE::GREEN << "The victorious side is team '" << Sides[0][0]->Social.Name << "'" << CONSOLE::RESET << endl;
+    }
+    else{
+        cout << CONSOLE::MAGENTA << "There are no winners in war." << CONSOLE::RESET << endl;
+    }
+
+
 }
 
 void CAMPAING::Battle(vector<vector<Object*>> Sides){
@@ -248,6 +273,7 @@ void CAMPAING::Battle(vector<vector<Object*>> Sides){
 
                 for (int a = 0; a < Sides[Team_A].size(); a++){
                     if (Sides[Team_A][a]->Life.HP == STATS::REJECTED){
+                        Sides[Team_A][a]->Type = Object_Type::DEAD;
                         Sides[Team_A].erase(Sides[Team_A].begin() + a--);
                     }
                 }
@@ -264,6 +290,7 @@ void CAMPAING::Battle(vector<vector<Object*>> Sides){
 
                 for (int b = 0; b < Sides[Team_B].size(); b++){
                     if (Sides[Team_B][b]->Life.HP == STATS::REJECTED){
+                        Sides[Team_B][b]->Type = Object_Type::DEAD;
                         Sides[Team_B].erase(Sides[Team_B].begin() + b--);
                     }
                 }
@@ -356,11 +383,23 @@ void CAMPAING::Update_World(){
 
             vector<Object*> Results = World->At(Absolute_X, Absolute_Y);
 
-            if (Absolute_X == Player->Position.X && Absolute_Y == Player->Position.Y && Results.size() > 1){
+            int Alive = 0;
+
+            for (auto& o : Results){
+                if (o->Type != Object_Type::DEAD){
+                    Alive++;
+                }
+            }
+
+            if (Absolute_X == Player->Position.X && Absolute_Y == Player->Position.Y && Alive > 1){
                 Act(Results);
             }
             else for (auto& tmp : Results){
-                if (tmp->Behaviour == Behaviour::AGGRESSIVE){
+                if ((tmp->Behaviour == Behaviour::AGGRESSIVE ||
+                    tmp->Behaviour == Behaviour::MAD ||
+                    tmp->Behaviour == Behaviour::TROLLER ||
+                    tmp->Behaviour == Behaviour::EVIL
+                    ) && tmp->Type != Object_Type::DEAD){
 
                     //First get the distance to the player.
                     int Distance_X = Player->Position.X - tmp->Position.X;

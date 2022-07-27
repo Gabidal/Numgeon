@@ -5,7 +5,7 @@
 
 class Map{
 public:
-    vector<Object> Objects;
+    vector<Object*> Objects;
 
     Map();
 

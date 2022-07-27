@@ -59,16 +59,18 @@ void Lobby(){
 }
 
 int main(int Argument_Count, char** Arguments){
+    srand(time(NULL));
+
     PARSE_ARGUMENTS::Parse_OS(Argument_Count, Arguments);
     INITIALIZE_UTILS::INIT();
     World = new Map();
 
     Player = new Object(true);
 
-    World->Objects.push_back(*Player);
+    World->Objects.push_back(Player);
 
     //Set the player to point into the map
-    Player = &World->Objects[World->Objects.size() - 1];
+    Player = World->Objects[World->Objects.size() - 1];
 
     Lobby();
 
