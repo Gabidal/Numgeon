@@ -159,22 +159,22 @@ void CAMPAING::Move(Object* o){
             if (Commands[0] == "up"){
                 Detect_Collision_X(o, o->Position.X + Amount);
 
-                Commands.erase(Commands.end() - 2, Commands.end());
+                Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else if (Commands[0] == "down"){
                 Detect_Collision_X(o, o->Position.X - Amount);
                 
-                Commands.erase(Commands.end() - 2, Commands.end());
+                Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else if (Commands[0] == "left"){
-                Detect_Collision_Y(o, o->Position.Y - Amount);
+                Detect_Collision_Y(o, o->Position.Y + Amount);
 
-                Commands.erase(Commands.end() - 2, Commands.end());
+                Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else if (Commands[0] == "right"){
                 Detect_Collision_Y(o, o->Position.Y - Amount);
                 
-                Commands.erase(Commands.end() - 2, Commands.end());
+                Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else{
                 cout << "Invalid deed" << endl;
