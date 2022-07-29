@@ -752,3 +752,32 @@ Object::Object(Object_Type t) : Object(){
     Type = t;
 }
 
+void Object::Use_Item(Object* o){
+
+    if (o->Type == Object_Type::ITEM){
+
+        cout << Social.Name << " used " << o->Social.Name << "." << endl;
+
+        Life.HP = (STATS)((int)Life.HP + ((int)o->Life.HP / ((int)STATS::COUNT - (int)Life.IQ)));
+        Life.STAMINA = (STATS)((int)Life.STAMINA + ((int)o->Life.STAMINA / ((int)STATS::COUNT - (int)Life.IQ)));
+        Life.IQ = (STATS)((int)Life.IQ + ((int)o->Life.IQ / ((int)STATS::COUNT - (int)Life.IQ)));
+        Life.STRENGTH = (STATS)((int)Life.STRENGTH + ((int)o->Life.STRENGTH / ((int)STATS::COUNT - (int)Life.IQ)));
+        Life.DEFENCE = (STATS)((int)Life.DEFENCE + ((int)o->Life.DEFENCE / ((int)STATS::COUNT - (int)Life.IQ)));
+        Life.MANA = (STATS)((int)Life.MANA + ((int)o->Life.MANA / ((int)STATS::COUNT - (int)Life.IQ)));
+
+    }
+
+}
+
+void Object::Add_Item(Object* o){
+
+    cout << Social.Name << " tried to add " << o->Social.Name << " to their inventory." << endl;
+
+    if (o->Life.DEFENCE > Life.STRENGTH){
+        cout << "But " << Social.Name << "Couldn't budge it." << endl;
+    }
+
+    
+
+}
+

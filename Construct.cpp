@@ -17,6 +17,11 @@ void Construct::Generate(int X, int Y){
             Tile->Position.X = X + x;
             Tile->Position.Y = Y + y;
 
+            //check if the space is already occupied
+            if (World->At(Tile->Position.X, Tile->Position.Y).size() > 0){
+                continue;
+            }
+
             World->Objects.push_back(Tile);
         }
     }

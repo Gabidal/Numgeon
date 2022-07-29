@@ -8,11 +8,11 @@ using namespace std;
 
 enum class Object_Type{
     ENTITY,
+    ITEM,
+    COUNT,
     WALL,
     AIR,
     WATER,
-    ITEM,
-    COUNT,
     PLAYER,
     DEAD,
 };
@@ -92,6 +92,8 @@ public:
     Behaviour Behaviour;
     Life_System Life;
     Social Social;
+    vector<Object*> Inventory;
+
 
     Object();
 
@@ -131,6 +133,10 @@ public:
     bool Over_Use_Magic();
 
     bool Say_Mad_Word();
+
+    void Use_Item(Object* o);
+
+    void Add_Item(Object* o);
 };
 
 #endif
