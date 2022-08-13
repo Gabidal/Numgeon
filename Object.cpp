@@ -226,6 +226,33 @@ char Object::Get_Marker(vector<Object*> o){
     return (char)*to_string(o.size()).begin();
 }
 
+
+char Object::Get_Marker(Object_Type type){
+    if (type == Object_Type::PLAYER){
+        return '^';
+    }
+    else if (type == Object_Type::ENTITY){
+        return '@';
+    }
+    else if (type == Object_Type::WALL){
+        return '#';
+    }
+    else if (type == Object_Type::AIR){
+        return ' ';
+    }
+    else if (type == Object_Type::WATER){
+        return '~';
+    }
+    else if (type == Object_Type::ITEM){
+        return '?';
+    }
+    else if (type == Object_Type::DEAD){
+        return '+';
+    }
+
+    return ' ';
+}
+
 void Object::Charm(Object* o){
     //first check if this is already be friended with the object o.
     pair<Object*, int> Friend_Status = Social.Find(o);
@@ -731,6 +758,8 @@ bool Object::Over_Use_Magic(){
     
     //experience new thing.
     Life.IQ = (STATS)((int)Life.IQ + 1);
+
+    return true;
 }
 
 bool Object::Say_Mad_Word(){
@@ -769,15 +798,17 @@ void Object::Use_Item(Object* o){
 
 }
 
-void Object::Add_Item(Object* o){
+bool Object::Add_Item(Object* o){
 
     cout << Social.Name << " tried to add " << o->Social.Name << " to their inventory." << endl;
 
     if (o->Life.DEFENCE > Life.STRENGTH){
         cout << "But " << Social.Name << "Couldn't budge it." << endl;
+
+        return false;
     }
 
     
-
+    return true;
 }
 

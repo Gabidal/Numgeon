@@ -66,13 +66,21 @@ int main(int Argument_Count, char** Arguments){
     INITIALIZE_UTILS::INIT();
     World = new Map();
 
-    for (int i = 0; i < 1000; i++){
-        int X = rand() % MAP_WIDTH;
-        int Y = rand() % MAP_WIDTH;
+    Construct C({{
+        "##########"
+        "#        #"
+        "#        #"
+        "#        #"
+        "#        #"
+        "#        #"
+        "#        #"
+        "#        #"
+        "#        #"
+        "##########",
+        10, 10, 5
+    },
 
-        Construct* C = CONSTRUCTS[rand() % CONSTRUCTS.size()];
-        C->Generate(X, Y);
-    }
+    });
 
     Player = new Object(true);
 

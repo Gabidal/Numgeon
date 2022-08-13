@@ -6,6 +6,7 @@
 #include "Console.h"
 #include "Parse_Arguments.h"
 #include "Teller.h"
+#include "Construct.h"
 
 #include <thread>
 #include <chrono>
@@ -120,9 +121,14 @@ void CAMPAING::Draw_Map(){
 
             if (X != -(RENDER_DISTANCE + 1) && Y !=  -(RENDER_DISTANCE + 1)){
 
-                vector<Object*> Current_Objects = World->At(Player->Position.X - X, Player->Position.Y - Y);
+                if (Player->Position.X + X < 0 || Player->Position.Y + Y < 0 || Player->Position.X + X > MAP_WIDTH || Player->Position.Y + Y > MAP_WIDTH){
+                    cout << CONSOLE::BLUE << CONSOLE::Bold(string(1, Object::Get_Marker(Object_Type::WATER))) << CONSOLE::RESET;
+                }
+                else{
+                    vector<Object*> Current_Objects = World->At(Player->Position.X + X, Player->Position.Y + Y);
 
-                cout << Object::Get_Color(Current_Objects) + Object::Get_Marker(Current_Objects) + CONSOLE::RESET;
+                    cout << Object::Get_Color(Current_Objects) + Object::Get_Marker(Current_Objects) + CONSOLE::RESET;
+                }
             }
 
             cout << " ";
@@ -157,22 +163,22 @@ void CAMPAING::Move(Object* o){
             int Amount = stoi(Commands[1]);
 
             if (Commands[0] == "up"){
-                Detect_Collision_X(o, o->Position.X + Amount);
+                Detect_Collision_X(o, o->Position.X - Amount);
 
                 Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else if (Commands[0] == "down"){
-                Detect_Collision_X(o, o->Position.X - Amount);
+                Detect_Collision_X(o, o->Position.X + Amount);
                 
                 Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else if (Commands[0] == "left"){
-                Detect_Collision_Y(o, o->Position.Y + Amount);
+                Detect_Collision_Y(o, o->Position.Y - Amount);
 
                 Commands.erase(Commands.begin(), Commands.begin() +2);
             }
             else if (Commands[0] == "right"){
-                Detect_Collision_Y(o, o->Position.Y - Amount);
+                Detect_Collision_Y(o, o->Position.Y + Amount);
                 
                 Commands.erase(Commands.begin(), Commands.begin() +2);
             }

@@ -9,8 +9,6 @@ public:
 
     vector<string> Family_Tree;
 
-    Map();
-
     vector<Object*> At(int X, int Y);
 };
 

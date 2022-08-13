@@ -109,6 +109,8 @@ public:
 
     static char Get_Marker(Object* o);
 
+    static char Get_Marker(Object_Type type);
+
     static char Get_Marker(vector<Object*> o);
 
     void Charm(Object* o);
@@ -136,7 +138,7 @@ public:
 
     void Use_Item(Object* o);
 
-    void Add_Item(Object* o);
+    bool Add_Item(Object* o);
 };
 
 #endif
