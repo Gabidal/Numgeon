@@ -17,12 +17,26 @@ enum class SIDE{
     RIGHT,
 };
 
+class Neighbour{
+public:
+    SIDE Side;
+    int ID = 0;
+    int Variation = 0;
+
+    Neighbour(SIDE side, int ID, int variation = 0){
+        Side = side;
+        this->ID = ID;
+        Variation = variation;
+    }
+};
+
 class Tile{
 public:
     //Side, <Tile ID, Variation>
-    vector<pair<SIDE, pair<int, int>>> Neighbours;
+    vector<Neighbour> Neighbours;
 
     int ID = 0;
+    int Variation = 0;
 
     string Data = "";
 
@@ -59,7 +73,7 @@ public:
 
     string Rotate_Data_Right(string data);
 
-    vector<pair<SIDE, pair<int, int>>> Rotate_Neighbours_To_Right(vector<pair<SIDE, pair<int, int>>> n);
+    vector<Neighbour> Rotate_Neighbours_To_Right(vector<Neighbour> n);
 };
 
 class Construct{
@@ -75,7 +89,7 @@ public:
 
     void Transform();
 
-    vector<pair<pair<int, int>, pair<int, int>>>  Get_Surrounding_Neighbours(int X, int Y, Tile_Set* Current_Tile_Set, Tile* Current_Tile);
+    vector<pair<Neighbour, pair<int, int>>>  Get_Surrounding_Neighbours(int X, int Y, Tile_Set* Current_Tile_Set, Tile* Current_Tile);
 
     static Object* Parse_Char(char Char);
 };

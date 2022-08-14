@@ -67,16 +67,16 @@ int main(int Argument_Count, char** Arguments){
     World = new Map();
 
     Construct C({{
-        "##########"
+        "####  ####"
         "#        #"
         "#        #"
         "#        #"
+        "          "
+        "          "
         "#        #"
         "#        #"
         "#        #"
-        "#        #"
-        "#        #"
-        "##########",
+        "####  ####",
         10, 10, 5
     },
 

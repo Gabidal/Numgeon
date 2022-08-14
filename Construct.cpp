@@ -24,38 +24,41 @@ void Tile_Set::Convert(){
             Tiles.push_back({New_Tile});
         }
     }
+    
+    int Tile_Horizontal_Count = Data_Width / Tile_Width;
 
-    //now we nned to compute the neighbours of each tile.
-    for (auto& i : Tiles){
-        int Tile_Horizontal_Count = Data_Width / Tile_Width;
+    for (int X = 0; X < Tile_Horizontal_Count; X++){
+        for (int Y = 0; Y < Tile_Horizontal_Count; Y++){
 
-        int Realtive_Index = i[0].ID;
+            Tile& Current_Tile = Tiles[X * Tile_Horizontal_Count + Y][0];
 
-        //Check that the tile.ID - 1 doesnt go to another row
-        if (Realtive_Index - 1 != Tile_Horizontal_Count && Realtive_Index - 1 >= 0){
+            //Check if left side if ok
+            if (Y - 1 >= 0){
+                Tile& Neighbouring_Tile = Tiles[X * Tile_Horizontal_Count + Y - 1][0];
 
-            i[0].Neighbours.push_back({SIDE::LEFT, {i[0].ID - 1, 0}});
+                Current_Tile.Neighbours.push_back({SIDE::RIGHT, Neighbouring_Tile.ID, Neighbouring_Tile.Variation});
+            }
+            
+            //Check if right side if ok
+            if (Y + 1 < Tile_Horizontal_Count){
+                Tile& Neighbouring_Tile = Tiles[X * Tile_Horizontal_Count + Y + 1][0];
 
-        }
+                Current_Tile.Neighbours.push_back({SIDE::LEFT, Neighbouring_Tile.ID, Neighbouring_Tile.Variation});
+            }
+            
+            //Check if top side if ok
+            if (X - 1 >= 0){
+                Tile& Neighbouring_Tile = Tiles[(X - 1) * Tile_Horizontal_Count + Y][0];
 
-        //Check if the tile.DI + 1 doesnt go to next row
-        if (Realtive_Index + 1 <= Tile_Horizontal_Count && Realtive_Index + 1 <= Tile_Horizontal_Count * Tile_Horizontal_Count){
+                Current_Tile.Neighbours.push_back({SIDE::TOP, Neighbouring_Tile.ID, Neighbouring_Tile.Variation});
+            }
+            
+            //Check if bottom side if ok
+            if (X + 1 < Tile_Horizontal_Count){
+                Tile& Neighbouring_Tile = Tiles[(X + 1) * Tile_Horizontal_Count + Y][0];
 
-            i[0].Neighbours.push_back({SIDE::RIGHT, {i[0].ID + 1, 0}});
-
-        }
-
-        //Check if the next row is existing
-        if (i[0].ID + Tile_Horizontal_Count <= Tiles.size()){
-
-            i[0].Neighbours.push_back({SIDE::BOTTOM, {i[0].ID + Tile_Width, 0}});
-
-        }
-
-        //Check if the previous row is existing
-        if (i[0].ID - Tile_Horizontal_Count >= 1){
-
-            i[0].Neighbours.push_back({SIDE::TOP, {i[0].ID - Tile_Width, 0}});
+                Current_Tile.Neighbours.push_back({SIDE::BOTTOM, Neighbouring_Tile.ID, Neighbouring_Tile.Variation});
+            }
 
         }
     }
@@ -67,9 +70,9 @@ void Tile_Set::Convert(){
     //We are going to add now the rotation tile variants
     for (int i = 0; i < Og_Tiles_Count; i++){
 
-        string Previus_Data = Tiles[Og_Tiles_Count][0].Data;
+        string Previus_Data = Tiles[i][0].Data;
         
-        vector<pair<SIDE, pair<int, int>>> Previus_Neighbours = Tiles[Og_Tiles_Count][0].Neighbours;
+        vector<Neighbour> Previus_Neighbours = Tiles[i][0].Neighbours;
          
         for (int Side = 0; Side < Square_Side_Count; Side++){
             Tile New_Tile;
@@ -80,29 +83,29 @@ void Tile_Set::Convert(){
             Previus_Neighbours = New_Tile.Neighbours = Rotate_Neighbours_To_Right(Previus_Neighbours);
 
             //Add the new variatino into the tile set.
-            Tiles[Og_Tiles_Count].push_back(New_Tile);
+            Tiles[i].push_back(New_Tile);
         }
     }
 }
 
-vector<pair<SIDE, pair<int, int>>> Tile_Set::Rotate_Neighbours_To_Right(vector<pair<SIDE, pair<int, int>>> n){
+vector<Neighbour> Tile_Set::Rotate_Neighbours_To_Right(vector<Neighbour> n){
 
-    vector<pair<SIDE, pair<int, int>>> Result = n;
+    vector<Neighbour> Result = n;
 
     for (int i = 0; i < n.size(); i++){
 
-        switch (n[i].first){
+        switch (n[i].Side){
             case SIDE::TOP:
-                Result[i].first = SIDE::RIGHT;
+                Result[i].Side = SIDE::RIGHT;
                 break;
             case SIDE::RIGHT:
-                Result[i].first = SIDE::BOTTOM;
+                Result[i].Side = SIDE::BOTTOM;
                 break;
             case SIDE::BOTTOM:
-                Result[i].first = SIDE::LEFT;
+                Result[i].Side = SIDE::LEFT;
                 break;
             case SIDE::LEFT:
-                Result[i].first = SIDE::TOP;
+                Result[i].Side = SIDE::TOP;
                 break;
         }
 
@@ -117,18 +120,12 @@ string Tile_Set::Rotate_Data_Right(string data){
     //Rotating --> -->
     string Result = data;
 
-    for (int Result_X = 0; Result_X < Tile_Width; Result_X++){
+    for (int Data_X = 0; Data_X < Tile_Width; Data_X++){
 
-        for (int Result_Y = 0; Result_Y < Tile_Width; Result_Y++){
+        for (int Data_Y = 0; Data_Y < Tile_Width; Data_Y++){
             
-            for (int Data_Y = Tile_Width; Data_Y >= 0; Data_Y--){
+            Result[Data_X * Tile_Width + Data_Y] = data[(Tile_Width - Data_Y - 1) * Tile_Width + Data_X];
 
-                for (int Data_X = 0; Data_X < Tile_Width; Data_X++){
-
-                    Result[Result_X * Tile_Width + Result_Y] += data[Data_X * Tile_Width + Data_Y];
-
-                }
-            }
         }
     }
 
@@ -158,7 +155,7 @@ void Construct::Wave_Function_Collapse(){
             //Now populate the top, bottom right and left sides of these coordinates of this tile with its respectfull neighbour data.
             for (auto& i : Get_Surrounding_Neighbours(X, Y, Current_Set, &Tile)){
                 
-                Map[i.second.first * Cell_Count_Horizontal + i.second.second].push_back(i.first);
+                Map[i.second.first * Cell_Count_Horizontal + i.second.second].push_back({i.first.ID, i.first.Variation});
 
             }
         }
@@ -171,7 +168,7 @@ void Construct::Wave_Function_Collapse(){
             continue;
         	
         int Most_ID = 0;
-        unordered_map<int, int> Most_Tile = {0, 0};
+        unordered_map<int, int> Most_Tile = {{0, 0}};
 
         for (auto& j : i){
             if (Most_Tile.find(j.first) != Most_Tile.end()){
@@ -182,6 +179,9 @@ void Construct::Wave_Function_Collapse(){
             }
             else{
                 Most_Tile[j.first] = j.second;
+
+                if (Most_Tile[Most_ID] < Most_Tile[j.first])
+                    Most_ID = j.first;
             }
         }
 
@@ -201,6 +201,9 @@ void Construct::Wave_Function_Collapse(){
             }
             else{
                 Most_Variation[j.second] = j.second;
+                
+                if (Most_Tile[Most_ID] < Most_Tile[j.first])
+                    Most_ID = j.first;
             }
         }
         
@@ -217,9 +220,12 @@ void Construct::Transform(){
 
     Tile_Set* Current_Set = &Tile_Sets[Tile_Set_ID];
 
-    for (int X = 0; X < MAP_WIDTH / Current_Set->Tile_Width; X++){
-        for (int Y = 0; Y < MAP_WIDTH / Current_Set->Tile_Width; Y++){
-            pair<int, int> Variation_Tile = Map[X * (MAP_WIDTH / Current_Set->Tile_Width) + Y][0];
+    int Chunk_Horizontal_Count = MAP_WIDTH / Current_Set->Tile_Width;
+
+    for (int X = 0; X < Chunk_Horizontal_Count; X++){
+        for (int Y = 0; Y < Chunk_Horizontal_Count; Y++){
+
+            pair<int, int> Variation_Tile = Map[X * (Chunk_Horizontal_Count) + Y][0];
 
             Tile* Current_Tile = &Current_Set->Tiles[Variation_Tile.first][Variation_Tile.second];
             
@@ -229,8 +235,9 @@ void Construct::Transform(){
                     Object* Entity = Parse_Char(Current_Tile->Data[Relative_X * Current_Set->Tile_Width + Relative_Y]);
 
                     if (Entity){
-                        Entity->Position.X = X * MAP_WIDTH + Relative_X;
-                        Entity->Position.Y = Y * MAP_WIDTH + Relative_Y;
+                        //Chunk index_x * chunk_width + inside chunk index_x
+                        Entity->Position.X = X * Current_Set->Tile_Width + Relative_X;
+                        Entity->Position.Y = Y * Current_Set->Tile_Width + Relative_Y;
 
                         World->Objects.push_back(Entity);
 
@@ -251,8 +258,10 @@ Object* Construct::Parse_Char(char Char){
     return nullptr;
 }
 
-vector<pair<pair<int, int>, pair<int, int>>> Construct::Get_Surrounding_Neighbours(int X, int Y, Tile_Set* Current_Tile_Set, Tile* Current_Tile){
-    vector<pair<pair<int, int>, pair<int, int>>>  Result;
+//This function checks the compability of the tile set neighbours and the map location restrictinos to get the best neighbour set.
+vector<pair<Neighbour, pair<int, int>>> Construct::Get_Surrounding_Neighbours(int X, int Y, Tile_Set* Current_Tile_Set, Tile* Current_Tile){
+    //{{neighbour x, y}, {map x, y}}
+    vector<pair<Neighbour, pair<int, int>>>  Result;
 
     int Cell_Width_Count = MAP_WIDTH / Current_Tile_Set->Tile_Width;
 
@@ -280,8 +289,8 @@ vector<pair<pair<int, int>, pair<int, int>>> Construct::Get_Surrounding_Neighbou
     
     for (auto& i : Fitted_Sides){
         for (auto& j : Current_Tile->Neighbours){
-            if (i.first == j.first){
-                Result.push_back({j.second, {i.second.first, i.second.second}});
+            if (i.first == j.Side){
+                Result.push_back({j, {i.second.first, i.second.second}});
             }
         }
     }
