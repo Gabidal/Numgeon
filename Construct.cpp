@@ -74,13 +74,21 @@ void Tile_Set::Convert(){
         
         vector<Neighbour> Previus_Neighbours = Tiles[i][0].Neighbours;
          
-        for (int Side = 0; Side < Square_Side_Count; Side++){
+        for (int Side = 1; Side <= Square_Side_Count; Side++){
             Tile New_Tile;
             //Save the newly rotated data and carry it to next rotation to take it from.
             Previus_Data = New_Tile.Data = Rotate_Data_Right(Previus_Data);
             New_Tile.ID = Tiles.size();
             
-            Previus_Neighbours = New_Tile.Neighbours = Rotate_Neighbours_To_Right(Previus_Neighbours);
+            New_Tile.Neighbours = Rotate_Neighbours_To_Right(Previus_Neighbours);
+
+            for (auto& j : New_Tile.Neighbours){
+
+                j.Variation = Side;
+
+            }
+
+            Previus_Neighbours = New_Tile.Neighbours;
 
             //Add the new variatino into the tile set.
             Tiles[i].push_back(New_Tile);
@@ -161,26 +169,110 @@ void Construct::Wave_Function_Collapse(){
         }
     }
 
+    int Previus_Entropy_Level = 0;
+
+    bool Continue = true;
+
+    unordered_map<int, int> Entropy_Levels;
+
+    int Entropy_Waving_Constant = 10;
+
+    while (Continue){
+
+        int Current_Entropy_Level = Collapse();
+
+        if (Entropy_Levels.find(Current_Entropy_Level) == Entropy_Levels.end()){
+            Entropy_Levels[Current_Entropy_Level] = 1;
+        }
+        else{
+            Entropy_Levels[Current_Entropy_Level]++;
+        }
+
+        if ( Previus_Entropy_Level != 0 ||
+            (Current_Entropy_Level >= Previus_Entropy_Level && 
+             Entropy_Levels[Current_Entropy_Level] > Entropy_Waving_Constant)){
+            Continue = false;
+        }
+
+        Previus_Entropy_Level = Current_Entropy_Level;
+
+        //Now that the map has been collapsed into only one candidate we need to make the entire map ENTROPY 0
+        //This is achieved by collapsed the adjasent tiles by the neighbour factor.
+        for (int X = 0; X < Cell_Count_Horizontal; X++){
+            for (int Y = 0; Y < Cell_Count_Horizontal; Y++){
+
+                pair<int, int> Tile_Information = Map[X * Cell_Count_Horizontal + Y][0];
+
+                Tile& tile = Current_Set->Tiles[Tile_Information.first][Tile_Information.second];
+
+                //Get the surrounding coordinates
+                for (auto N : Get_Surrounding_Neighbours(X, Y, Current_Set, &tile)){
+
+                    //Relative side from neighbour perspective
+                    SIDE s = N.first.Side;
+
+                    //Now invert the side.
+                    switch (s){
+                        case SIDE::TOP:
+                            s = SIDE::BOTTOM;
+                            break;
+                        case SIDE::RIGHT:
+                            s = SIDE::LEFT;
+                            break;
+                        case SIDE::BOTTOM:
+                            s = SIDE::TOP;
+                            break;
+                        case SIDE::LEFT:
+                            s = SIDE::RIGHT;
+                            break;
+                    }
+                    
+                    Tile_Information = Map[N.second.first * Cell_Count_Horizontal + N.second.second][0];
+
+                    Tile Neighbouring_Tile = Current_Set->Tiles[Tile_Information.first][Tile_Information.second];
+
+                    //Get the relative neighbour from neighbouring tile that represents the same space as this Current_Tile.
+                    for (auto& Neigbour_Neighbour : Neighbouring_Tile.Neighbours){
+                        if (s != Neigbour_Neighbour.Side)
+                            continue;
+
+                        if (Neigbour_Neighbour.ID == tile.ID && Neigbour_Neighbour.Variation == tile.Variation)
+                            continue;   //this tile is in a accetable entropy level.
+
+                        Map[X * Cell_Count_Horizontal + Y].push_back({Neigbour_Neighbour.ID, Neigbour_Neighbour.Variation});
+                    }
+
+                }
+
+            }
+        }
+    }
+}
+
+int Construct::Collapse(){
+    int Entropy_Level = 0;
     //now that the map has been populated we can start the wave collaps part of the function.
     for (auto& i : Map){
         //This index has already collapsed.
         if (i.size() == 1)
             continue;
+
+        Entropy_Level++;
         	
         int Most_ID = 0;
         unordered_map<int, int> Most_Tile = {{0, 0}};
 
         for (auto& j : i){
             if (Most_Tile.find(j.first) != Most_Tile.end()){
-                Most_Tile[j.first] += j.second;
+                Most_Tile[j.first]++;
 
                 if (Most_Tile[Most_ID] < Most_Tile[j.first])
                     Most_ID = j.first;
             }
             else{
-                Most_Tile[j.first] = j.second;
+                Most_Tile[j.first] = 0;
 
-                if (Most_Tile[Most_ID] < Most_Tile[j.first])
+                if (Most_Tile[Most_ID] == 0)
                     Most_ID = j.first;
             }
         }
@@ -194,15 +286,15 @@ void Construct::Wave_Function_Collapse(){
                 continue;
 
             if (Most_Variation.find(j.second) != Most_Variation.end()){
-                Most_Variation[j.second] += j.second;
+                Most_Variation[j.second]++;
 
                 if (Most_Variation[Most_Variation_ID] < Most_Variation[j.second])
                     Most_Variation_ID = j.second;
             }
             else{
-                Most_Variation[j.second] = j.second;
+                Most_Variation[j.second] = 0;
                 
-                if (Most_Tile[Most_ID] < Most_Tile[j.first])
+                if (Most_Tile[Most_ID] == 0)
                     Most_ID = j.first;
             }
         }
@@ -212,6 +304,7 @@ void Construct::Wave_Function_Collapse(){
         i.push_back({Most_ID, Most_Variation_ID});
     }
 
+    return Entropy_Level;
 }
 
 void Construct::Transform(){
@@ -297,7 +390,6 @@ vector<pair<Neighbour, pair<int, int>>> Construct::Get_Surrounding_Neighbours(in
 
     return Result;
 }
-
 
 Construct::Construct(vector<Tile_Set> Data){
     Tile_Sets = Data;

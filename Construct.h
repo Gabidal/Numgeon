@@ -87,6 +87,8 @@ public:
 
     void Wave_Function_Collapse();
 
+    int Collapse();
+
     void Transform();
 
     vector<pair<Neighbour, pair<int, int>>>  Get_Surrounding_Neighbours(int X, int Y, Tile_Set* Current_Tile_Set, Tile* Current_Tile);
