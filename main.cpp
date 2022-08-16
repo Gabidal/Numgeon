@@ -66,48 +66,14 @@ int main(int Argument_Count, char** Arguments){
     INITIALIZE_UTILS::INIT();
     World = new Map();
 
-    Construct C({{
-        // "#        #"
-        // "#        #"
-        // "#        #"
-        // "#        #"
-        // "#        #"
-        // "          "
-        // "##########"
-        // "          "
-        // "          "
-        // "##########",
-        //10, 10, 5
-        "#      #"
-        "#      #"
-        "#      #"
-        "#      #"
-        "        "
-        "########"
-        "        "
-        "########",
-        8, 8, 2
-    },
-    {
-        "        "
-        "        "
-        "        "
-        "        "
-        "        "
-        "        "
-        "        "
-        "        ",
-        8, 8, 2
-    }
-
-    });
-
     Player = new Object(true);
 
     World->Objects.push_back(Player);
 
     //Set the player to point into the map
     Player = World->Objects[World->Objects.size() - 1];
+
+    World->Populate();
 
     Lobby();
 

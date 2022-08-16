@@ -28,7 +28,8 @@ void CAMPAING::Campaing(){
         cout << "1: Map\n";
         cout << "2: Move\n";
         cout << "3: Act\n";
-        cout << "4: Exit campaing\n";
+        cout << "4: Tasks\n";
+        cout << "5: Exit campaing\n";
         cout << ": ";
         cin >> tmp;
         cout << endl;
@@ -71,13 +72,25 @@ void CAMPAING::Campaing(){
             Act(actors);
         }
         else if (Action == 4){
+            cout << "\nYour tasks are:\n";
+
+            for (auto& t : Player->Social.Tasks){
+                if (t->Check_Task_Status(Player))
+                    continue;
+
+                t->Print();
+            }
+
+            cout << endl;
+        }
+        else if (Action == 5){
             return;
         }
         else{
             cout << "Invalid deed" << endl;
         }
 
-        if (Action != 1){
+        if (Action != 1 && Action != 4){
             //Update AI
             Update_World();
         }
@@ -406,6 +419,11 @@ void CAMPAING::Update_World(){
             for (auto& o : Results){
                 if (o->Type != Object_Type::DEAD){
                     Alive++;
+                }
+
+                if (o->Type == Object_Type::ENTITY || o->Type == Object_Type::PLAYER){
+                    Task* task = new Task(o);
+                    o->Social.Tasks.push_back(task);
                 }
             }
 

@@ -10,6 +10,8 @@ public:
     vector<string> Family_Tree;
 
     vector<Object*> At(int X, int Y);
+
+    void Populate();
 };
 
 #endif

@@ -3,6 +3,7 @@
 #include "Parse_Arguments.h"
 #include "Globals.h"
 #include "Teller.h"
+#include "Map.h"
 
 #include <iostream>
 #include <map>
@@ -10,6 +11,7 @@
 using namespace std;
 
 extern Object* Player;
+extern Map* World;
 
 string Life_System::Get_Stats(STATS sta){
 
@@ -226,7 +228,6 @@ char Object::Get_Marker(vector<Object*> o){
     return (char)*to_string(o.size()).begin();
 }
 
-
 char Object::Get_Marker(Object_Type type){
     if (type == Object_Type::PLAYER){
         return '^';
@@ -363,7 +364,6 @@ void Object::Turn(vector<Object*>& Enemies, vector<Object*>& Team){
         }
     }
 }
-
 
 int Object::AI_Turn(vector<Object*>& Enemies, vector<Object*>& Team){
 
@@ -810,5 +810,76 @@ bool Object::Add_Item(Object* o){
 
     
     return true;
+}
+
+Task::Task(Object* holder){
+    //First select a random 
+    for (auto& Ent : World->Objects){
+        if (Ent->Type == Object_Type::WALL || Ent->Type == Object_Type::WATER || Ent->Type == Object_Type::COUNT)
+            continue;
+
+        if (Ent == holder)
+            continue;
+
+        bool Already_Has_Task = false;
+        for (auto& i : holder->Social.Tasks){
+            if (i->Objective == Ent){
+                Already_Has_Task = true;
+                break;
+            }
+        }
+
+        if (Already_Has_Task){
+            continue;
+        }
+
+        Objective = Ent;
+        break;
+    }
+
+    //the distance between holder and the objective
+    int Objective_Distance = sqrt(pow(holder->Position.X - Objective->Position.X, 2) + pow(holder->Position.Y - Objective->Position.Y, 2));
+
+    Reward = (STATS)((Objective_Distance) % (int)STATS::COUNT);
+
+    if (Objective->Type == Object_Type::ENTITY){
+
+        Keep_Objective_Alive = false;
+
+    }
+}
+
+bool Task::Check_Task_Status(Object* holder){
+    bool Result = false;
+
+    if (Keep_Objective_Alive == false){
+        //check if the objective is killed
+        if (Objective->Life.HP == STATS::REJECTED){
+            Result = true;
+        }
+    }
+
+    for (auto& i : holder->Inventory){
+        if (i == Objective){
+            Result = true;
+        }
+    }
+
+    return Result;
+}
+
+void Task::Print(){
+
+    if (Keep_Objective_Alive == false){
+        cout << "Kill " << Object::Get_Color(Objective) << Objective->Social.Name << CONSOLE::RESET << endl;
+    }
+    else{
+        cout << "Capture " << Objective->Social.Name << endl;
+    }
+
+    cout << "At: (" << Objective->Position.X << ", " << Objective->Position.Y << ")" << endl;
+
+    cout << "Your reward is " << Life_System::Get_Stats(Reward) << "\n" << endl;
+
 }
 

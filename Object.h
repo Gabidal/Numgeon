@@ -60,7 +60,7 @@ public:
 
     Life_System();
 
-    string Get_Stats(STATS sta);
+    static string Get_Stats(STATS sta);
 
     void Report();
 };
@@ -70,6 +70,23 @@ public:
     int X = 0;
     int Y = 0;
 
+};
+
+class Object;
+
+class Task{
+public:
+    Object* Objective = nullptr;
+    bool Keep_Objective_Alive = true;
+    STATS Reward;
+
+    //Generate random task
+    Task(Object* holder);
+
+    //If the task is completed then return true.
+    bool Check_Task_Status(Object* holder);
+
+    void Print();
 };
 
 class Social{
@@ -82,6 +99,10 @@ public:
 
     Position Birth_Place;
 
+    STATS Respect = STATS::REJECTED;
+    vector<Task*> Tasks;
+
+
     pair<class Object*, int> Find(Object* o);
 };
 
@@ -93,7 +114,6 @@ public:
     Life_System Life;
     Social Social;
     vector<Object*> Inventory;
-
 
     Object();
 
