@@ -840,7 +840,7 @@ Task::Task(Object* holder){
     //the distance between holder and the objective
     int Objective_Distance = sqrt(pow(holder->Position.X - Objective->Position.X, 2) + pow(holder->Position.Y - Objective->Position.Y, 2));
 
-    Reward = (STATS)((Objective_Distance) % (int)STATS::COUNT);
+    Reward = Objective_Distance / MAP_WIDTH;
 
     if (Objective->Type == Object_Type::ENTITY){
 
@@ -871,15 +871,75 @@ bool Task::Check_Task_Status(Object* holder){
 void Task::Print(){
 
     if (Keep_Objective_Alive == false){
-        cout << "Kill " << Object::Get_Color(Objective) << Objective->Social.Name << CONSOLE::RESET << endl;
+        cout << "    Kill " << Object::Get_Color(Objective) << Objective->Social.Name << CONSOLE::RESET << endl;
     }
     else{
-        cout << "Capture " << Objective->Social.Name << endl;
+        cout << "    Capture " << Objective->Social.Name << endl;
     }
 
-    cout << "At: (" << Objective->Position.X << ", " << Objective->Position.Y << ")" << endl;
+    cout << "    At: (" << Objective->Position.X << ", " << Objective->Position.Y << ")" << endl;
 
-    cout << "Your reward is " << Life_System::Get_Stats(Reward) << "\n" << endl;
+    cout << "    Your reward is " << Life_System::Get_Stats((STATS)(Reward % (int)STATS::COUNT));
 
 }
 
+void Social::List_Tasks(Object* holder){
+
+    cout << "\nYour tasks are:\n";
+
+    bool Completed = false;
+
+    for (int i = 0; i < Tasks.size(); i++){
+        cout << i << "\n";
+
+        Tasks[i]->Print();
+
+        if (Tasks[i]->Check_Task_Status(holder)){
+            cout << "[" << CONSOLE::GREEN << "Completed" << CONSOLE::RESET << "]\n" << endl;
+            Completed = true;
+        }
+    }
+
+    if (Tasks.size() == 0){
+
+        cout << "Stay alive!" << endl;
+
+    }
+
+    cout << endl;
+
+    if (Completed){
+        cout << "Claim Completed missions" << endl;
+        cout << "Type [-1] to exit" << endl;
+
+        while (true){
+            string tmp = "";
+            cin >> tmp;
+
+            int Choise = stoi(tmp);
+
+            if (Choise == -1){
+                break;
+            }
+
+            if (Tasks[Choise]->Check_Task_Status(holder)){
+                Increase_Stat_By_One(Respect);
+
+                Money += Tasks[Choise]->Reward;
+                break;
+            }
+            else{
+                cout << "This mission has not been completed yet." << endl;
+            }
+        }
+    }
+}
+
+
+void Increase_Stat_By_One(STATS& s){
+    s = (STATS)(((int)s + 1) % (int)STATS::COUNT);
+}
+
+void Decrease_Stat_By_One(STATS& s){
+    s = (STATS)(((int)s - 1) % (int)STATS::COUNT);
+}

@@ -39,6 +39,9 @@ enum class STATS{
     COUNT,
 };
 
+inline void Increase_Stat_By_One(STATS& s);
+inline void Decrease_Stat_By_One(STATS& s);
+
 template<typename T>
 T Random(){
     return (T)(rand() % (int)T::COUNT);
@@ -78,7 +81,7 @@ class Task{
 public:
     Object* Objective = nullptr;
     bool Keep_Objective_Alive = true;
-    STATS Reward;
+    int Reward = 0;
 
     //Generate random task
     Task(Object* holder);
@@ -101,6 +104,9 @@ public:
 
     STATS Respect = STATS::REJECTED;
     vector<Task*> Tasks;
+    int Money = 0;
+
+    void List_Tasks(Object* holder);
 
 
     pair<class Object*, int> Find(Object* o);

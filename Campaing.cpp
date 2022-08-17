@@ -28,7 +28,7 @@ void CAMPAING::Campaing(){
         cout << "1: Map\n";
         cout << "2: Move\n";
         cout << "3: Act\n";
-        cout << "4: Tasks\n";
+        cout << "4: Tasks              (" << Player->Social.Tasks.size() << ")\n";
         cout << "5: Exit campaing\n";
         cout << ": ";
         cin >> tmp;
@@ -72,16 +72,7 @@ void CAMPAING::Campaing(){
             Act(actors);
         }
         else if (Action == 4){
-            cout << "\nYour tasks are:\n";
-
-            for (auto& t : Player->Social.Tasks){
-                if (t->Check_Task_Status(Player))
-                    continue;
-
-                t->Print();
-            }
-
-            cout << endl;
+            Player->Social.List_Tasks(Player);
         }
         else if (Action == 5){
             return;
@@ -422,8 +413,10 @@ void CAMPAING::Update_World(){
                 }
 
                 if (o->Type == Object_Type::ENTITY || o->Type == Object_Type::PLAYER){
-                    Task* task = new Task(o);
-                    o->Social.Tasks.push_back(task);
+                    if (rand() % Task_Probability == 0){
+                        Task* task = new Task(o);
+                        o->Social.Tasks.push_back(task);
+                    }
                 }
             }
 
