@@ -36,6 +36,12 @@
     <ClCompile Include="Teller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Construct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Construct.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h">
@@ -55,15 +61,18 @@
     </ClInclude>
     <ClInclude Include="Parse_Arguments.h">
       <Filter>Header Files</Filter>
-    </ClInclude>    
-    <ClCompile Include="Campaing.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Initialize_Utils.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Teller.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Campaing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Teller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GGUI/GGUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="GGUI\GGUI.lib" />
   </ItemGroup>
 </Project>

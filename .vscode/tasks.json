@@ -1,31 +1,18 @@
 {
     "tasks": [
         {
-            "type": "cppbuild",
+            "type": "shell",
             "label": "Buildarna",
-            "command": "msbuild.exe",
+            "command": "meson",
             "args": [
-                "Numgeon.sln",
-                "/p:Configuration=Debug",
-                //"/t:Rebuild"
+                "compile",
+                "-C",
+                "Build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": [
-                "$msCompile",
-                {
-                    "fileLocation": "autoDetect",
-                    "pattern": {
-                      "regexp": "^([^\\s].*)\\s*:\\s+(?:fatal\\s+)?(error|warning)\\s+(LNK\\d+)\\s*:\\s*(.*)\\[(.*)\\]$",
-                      "kind": "file",
-                      "severity": 2,
-                      "code": 3,
-                      "message": 4,
-                      "file": 5
-                    }
-                  }
-            ],
+            "problemMatcher": "$gcc",
             "group": "build",
             "detail": "Buildarna"
         }

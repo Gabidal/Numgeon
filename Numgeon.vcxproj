@@ -69,6 +69,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>GGUI;$(LibraryPath)</LibraryPath>
+    <IncludePath>GGUI;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -102,6 +106,11 @@
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>./GGUI/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>GGUI.lib</ImportLibrary>
+      <AdditionalDependencies>GGUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -132,6 +141,10 @@
     <ClInclude Include="Campaing.h" />
     <ClInclude Include="Teller.h" />
     <ClCompile Include="Construct.h" />
+    <ClInclude Include="GGUI/GGUI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="GGUI\GGUI.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

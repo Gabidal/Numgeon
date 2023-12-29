@@ -4,6 +4,7 @@
 #include "Globals.h"
 
 #include <unordered_map>
+#include <math.h>
 
 extern Map* World;
 
@@ -100,7 +101,7 @@ vector<Neighbour> Tile_Set::Rotate_Neighbours_To_Right(vector<Neighbour> n){
 
     vector<Neighbour> Result = n;
 
-    for (int i = 0; i < n.size(); i++){
+    for (unsigned int i = 0; i < n.size(); i++){
 
         switch (n[i].Side){
             case SIDE::TOP:

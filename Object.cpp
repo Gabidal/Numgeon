@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <map>
+#include <math.h>
 
 using namespace std;
 
